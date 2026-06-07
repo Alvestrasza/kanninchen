@@ -1,0 +1,30 @@
+# Meta
+# Version: 0.1.0
+# Created: 2026-06-07
+# Updated: 2026-06-07
+# Purpose: systemd unit for Kaninchen Quest PROD.
+
+[Unit]
+Description=Kaninchen Quest PROD Next.js Application
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=webapps
+Group=webapps
+WorkingDirectory=/opt/sites/kanninchen.prod/app
+EnvironmentFile=/etc/kanninchen.prod/kanninchen.env
+Environment=NODE_ENV=production
+Environment=PORT=3005
+ExecStart=/usr/bin/npm run start -- --hostname 127.0.0.1 --port 3005
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/sites/kanninchen.prod/app/.next /opt/logs/kanninchen.prod
+
+[Install]
+WantedBy=multi-user.target
