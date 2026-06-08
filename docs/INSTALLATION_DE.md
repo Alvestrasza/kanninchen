@@ -167,10 +167,10 @@ Den Client Secret Wert in `/etc/kaninchen/kaninchen.env` eintragen.
 
 ## Manuelle Änderungen
 
-cd /opt/sites/kaninchen/app
+cd /opt/sites/kanninchen/app
 
 set -a
-source /etc/kaninchen/kaninchen.env
+source /etc/kanninchen/kanninchen.env
 set +a
 
 git stash
@@ -180,5 +180,5 @@ npx --no-install prisma generate
 npx --no-install prisma migrate deploy
 npm run build
 
-sudo systemctl restart kaninchen.service
-sudo systemctl status kaninchen.service
+sudo systemctl restart kanninchen.service
+sudo systemctl status kanninchen.service
