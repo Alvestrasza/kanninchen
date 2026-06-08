@@ -59,7 +59,7 @@ kanninchen-quest/
 ## Lokale Entwicklung
 
 ```bash
-cd /opt/sites/kanninchen.dev/app
+cd /opt/sites/kanninchen/app
 cp .env.example .env
 npm install
 npx prisma generate
@@ -72,10 +72,10 @@ npm run dev
 ```env
 AUTH_URL=http://localhost:3000
 AUTH_SECRET="CHANGE_ME_GENERATE_A_RANDOM_SECRET"
-DATABASE_URL="postgresql://kanninchen_app:CHANGE_ME@localhost:5432/kanninchen_dev?schema=public"
-AUTH_KEYCLOAK_ID="kanninchen-dev"
+DATABASE_URL="postgresql://kanninchen_app:CHANGE_ME@localhost:5432/kanninchen?schema=public"
+AUTH_KEYCLOAK_ID="kanninchen"
 AUTH_KEYCLOAK_SECRET="CHANGE_ME_CLIENT_SECRET"
-AUTH_KEYCLOAK_ISSUER="https://login.alvestrasza.com/realms/flightclub"
+AUTH_KEYCLOAK_ISSUER="https://login.yourdomain.com/realms/flightclub"
 ```
 
 ## Keycloak Client
@@ -92,8 +92,8 @@ Web origins:         http://localhost:3000
 Produktivbeispiel:
 
 ```text
-Valid redirect URIs: https://kanninchen.alvestrasza.com/api/auth/callback/keycloak
-Web origins:         https://kanninchen.alvestrasza.com
+Valid redirect URIs: https://kanninchen.yourdomain.com/api/auth/callback/keycloak
+Web origins:         https://kanninchen.yourdomain.com
 ```
 
 ## Datenmodell
