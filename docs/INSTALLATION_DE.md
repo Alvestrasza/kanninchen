@@ -165,9 +165,7 @@ Web origins: https://kanninchen.yourdomain.com
 
 Den Client Secret Wert in `/etc/kanninchen/kanninchen.env` eintragen.
 
-
-
-# Manuelle Änderungen:
+## Manuelle Änderungen
 
 cd /opt/sites/kanninchen/app
 
@@ -175,6 +173,7 @@ set -a
 source /etc/kanninchen/kanninchen.env
 set +a
 
+git stash
 git pull --ff-only
 npm install
 npx --no-install prisma generate
