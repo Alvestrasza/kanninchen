@@ -6,6 +6,11 @@
 
 import { prisma } from "@/lib/db/prisma";
 import { rabbitTasks } from "@/data/rabbit/tasks";
+import {
+  getUserAchievementViews,
+  unlockEligibleAchievements,
+  type RabbitAchievementView,
+} from "@/lib/rabbit/achievements";
 import { awardTaskCompletionXp, getUserTotalXp } from "@/lib/rabbit/xp";
 
 const APP_TIME_ZONE = "Europe/Berlin";
@@ -117,6 +122,7 @@ export type UserProgressState = {
   progress: TaskProgressState;
   streakCount: number;
   totalXp: number;
+  achievements: RabbitAchievementView[];
 };
 
 export type ProgressUpdateResult = {
@@ -124,6 +130,8 @@ export type ProgressUpdateResult = {
   streakCount: number;
   totalXp: number;
   awardedXp: number;
+  achievements: RabbitAchievementView[];
+  unlockedAchievementIds: string[];
 };
 
 function normalizeSubtasks(value: unknown, length: number): boolean[] {
@@ -199,13 +207,15 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
     getUserTotalXp(userId),
   ]);
 
+  const achievements = await getUserAchievementViews(userId, streakCount);
+
   return {
     activeTaskId,
     progress,
     streakCount,
     totalXp,
+    achievements,
   };
-
 }
 
 export async function upsertTaskProgress(
@@ -259,6 +269,7 @@ export async function upsertTaskProgress(
   });
 
   let awardedXp = 0;
+  let unlockedAchievementIds: string[] = [];
 
   if (completed && !existing?.completed) {
     awardedXp = await awardTaskCompletionXp({
@@ -267,6 +278,9 @@ export async function upsertTaskProgress(
       taskId,
       dateKey,
     });
+
+    const streakCount = await getUserStreak(userId);
+    unlockedAchievementIds = await unlockEligibleAchievements(userId, streakCount);
   }
 
   const state = await getUserProgress(userId);
@@ -276,6 +290,8 @@ export async function upsertTaskProgress(
     streakCount: state.streakCount,
     totalXp: state.totalXp,
     awardedXp,
+    achievements: state.achievements,
+    unlockedAchievementIds,
   };
 }
 
@@ -317,5 +333,7 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
     streakCount: state.streakCount,
     totalXp: state.totalXp,
     awardedXp: 0,
+    achievements: state.achievements,
+    unlockedAchievementIds: [],
   };
 }

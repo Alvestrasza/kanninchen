@@ -1025,3 +1025,36 @@ a {
     text-align: center;
   }
 }
+
+.badge-mark.locked,
+.achievement-card.locked .badge-mark {
+  opacity: 0.42;
+  filter: grayscale(0.85);
+}
+
+.achievement-card.locked {
+  opacity: 0.76;
+}
+
+.achievement-card.unlocked {
+  border-color: rgba(255, 211, 93, 0.5);
+  box-shadow: 0 0 1rem rgba(255, 211, 93, 0.18);
+}
+
+.achievement-progress {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.achievement-progress span {
+  color: var(--cyan);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.achievement-card small {
+  display: block;
+  margin-top: 0.65rem;
+  color: var(--muted);
+}

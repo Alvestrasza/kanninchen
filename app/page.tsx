@@ -19,6 +19,7 @@ export default async function HomePage() {
       initialProgress={state.progress}
       initialStreakCount={state.streakCount}
       initialTotalXp={state.totalXp}
+      initialAchievements={state.achievements}
     />
   );
 }

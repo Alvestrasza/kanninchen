@@ -21,12 +21,13 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  xpEvents      RabbitXpEvent[]
-
+  
   taskProgress  RabbitTaskProgress[]
   journalEntries RabbitJournalEntry[]
   rabbits       RabbitProfile[]
   preferences   RabbitUserPreference?
+  xpEvents      RabbitXpEvent[]
+  achievementUnlocks RabbitAchievementUnlock[]
   authenticators Authenticator[]
 
   createdAt     DateTime  @default(now())
@@ -164,4 +165,17 @@ model RabbitXpEvent {
   @@index([userId, awardedAt])
   @@index([userId, source])
   @@index([taskId, dateKey])
+}
+
+model RabbitAchievementUnlock {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, unlockedAt])
 }

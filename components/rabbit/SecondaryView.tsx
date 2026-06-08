@@ -1,15 +1,15 @@
 "use client";
 
 import { motion } from "motion/react";
-
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
-import { achievements } from "@/data/rabbit/tasks";
+import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 
 type SecondaryViewProps = {
   view: RabbitView;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
+  achievements: RabbitAchievementView[];
   onReset: () => void;
 };
 
@@ -56,6 +56,7 @@ export function SecondaryView({
   completedCount,
   totalTasks,
   totalXp,
+  achievements,
   onReset,
 }: SecondaryViewProps) {
   if (view === "rabbits") {
@@ -87,18 +88,49 @@ export function SecondaryView({
   }
 
   if (view === "achievements") {
+    const unlockedCount = achievements.filter((achievement) => achievement.unlocked).length;
+
     return (
       <>
         <h2>Erfolge</h2>
 
-        <p>Aktive Serie, saubere Stallpflege und Fütterungsroutine laufen.</p>
+        <p>
+          {unlockedCount} von {achievements.length} Erfolgen freigeschaltet.
+          Jeder Erfolg zeigt dir, wie weit du schon gekommen bist.
+        </p>
 
         <div className="badges expanded-badges">
           {achievements.map((achievement) => (
-            <div className="guide-card" key={achievement.title}>
-              <div className="badge-mark">{achievement.icon}</div>
+            <div
+              className={`guide-card achievement-card${achievement.unlocked ? " unlocked" : " locked"}`}
+              key={achievement.id}
+            >
+              <div className={`badge-mark${achievement.unlocked ? "" : " locked"}`}>
+                {achievement.icon}
+              </div>
+
               <h3>{achievement.title}</h3>
+
               <p>{achievement.description}</p>
+
+              <div className="achievement-progress">
+                <span>
+                  {achievement.progress} / {achievement.target}
+                </span>
+
+                <div className="xp-track">
+                  <motion.span
+                    initial={{ width: 0 }}
+                    animate={{ width: `${achievement.percent}%` }}
+                  />
+                </div>
+              </div>
+
+              <small>
+                {achievement.unlocked
+                  ? "Freigeschaltet"
+                  : "Noch nicht freigeschaltet"}
+              </small>
             </div>
           ))}
         </div>

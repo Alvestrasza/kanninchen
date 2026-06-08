@@ -5,6 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 import { resetProgressAction, saveTaskProgressAction, setActiveTaskAction } from "@/app/actions";
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
+import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
@@ -26,6 +27,7 @@ type RabbitQuestAppProps = {
   initialProgress: TaskProgressState;
   initialStreakCount: number;
   initialTotalXp: number;
+  initialAchievements: RabbitAchievementView[];
 };
 
 export function RabbitQuestApp({
@@ -34,15 +36,17 @@ export function RabbitQuestApp({
   initialProgress,
   initialStreakCount,
   initialTotalXp,
+  initialAchievements,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
-const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
-const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
-const [streakCount, setStreakCount] = useState(initialStreakCount);
-const [totalXp, setTotalXp] = useState(initialTotalXp);
-const [view, setView] = useState<RabbitView>("quests");
-const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
-const [isPending, startTransition] = useTransition();
+  const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
+  const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
+  const [streakCount, setStreakCount] = useState(initialStreakCount);
+  const [totalXp, setTotalXp] = useState(initialTotalXp);
+  const [achievements, setAchievements] = useState(initialAchievements);
+  const [view, setView] = useState<RabbitView>("quests");
+  const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
+  const [isPending, startTransition] = useTransition();
 
   const activeTask = useMemo(
     () => rabbitTasks.find((task) => task.id === activeTaskId) ?? rabbitTasks[0],
@@ -83,6 +87,16 @@ const [isPending, startTransition] = useTransition();
         setProgress(result.progress);
         setStreakCount(result.streakCount);
         setTotalXp(result.totalXp);
+        setAchievements(result.achievements);
+
+        if (result.unlockedAchievementIds.length > 0) {
+          setMessage(
+            result.awardedXp > 0
+              ? `${successMessage} +${result.awardedXp} XP · Neuer Erfolg freigeschaltet!`
+              : `${successMessage} Neuer Erfolg freigeschaltet!`,
+          );
+          return;
+        }
 
         setMessage(
           result.awardedXp > 0
@@ -115,7 +129,8 @@ const [isPending, startTransition] = useTransition();
         setProgress(result.progress);
         setStreakCount(result.streakCount);
         setTotalXp(result.totalXp);
-        setMessage("Tagesfortschritt wurde zurückgesetzt. XP bleiben erhalten.");
+        setAchievements(result.achievements);
+        setMessage("Tagesfortschritt wurde zurückgesetzt. XP und Erfolge bleiben erhalten.");
       } catch {
         setMessage("Zurücksetzen fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
       }
@@ -159,6 +174,7 @@ const [isPending, startTransition] = useTransition();
               percent={percent}
               litSegments={litSegments}
               totalXp={totalXp}
+              achievements={achievements}
               onShowAchievements={() => setCurrentView("achievements")}
             />
           </motion.main>
@@ -176,6 +192,7 @@ const [isPending, startTransition] = useTransition();
             completedCount={completedDailyCount}
             totalTasks={totalDailyTasks}
             totalXp={totalXp}
+            achievements={achievements}
             onReset={resetProgress}
           />
           </motion.section>

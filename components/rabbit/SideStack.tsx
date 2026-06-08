@@ -1,15 +1,17 @@
 "use client";
 
 import { motion } from "motion/react";
-import { achievements, baseMetrics } from "@/data/rabbit/tasks";
+import { baseMetrics } from "@/data/rabbit/tasks";
+import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 
 type SideStackProps = {
   completedCount: number;
   streakCount: number;
-  totalXp: number;
   percent: number;
   litSegments: number;
+  totalXp: number;
+  achievements: RabbitAchievementView[];
   onShowAchievements: () => void;
 };
 
@@ -19,12 +21,16 @@ export function SideStack({
   percent,
   litSegments,
   totalXp,
+  achievements,
   onShowAchievements,
 }: SideStackProps) {
   const bonus = Math.min(8, completedCount);
   const levelInfo = getCaretakerLevelInfo(totalXp);
   const formattedTotalXp = levelInfo.totalXp.toLocaleString("de-DE");
   const formattedNextLevelXp = levelInfo.nextLevelXp.toLocaleString("de-DE");
+  const highlightedAchievements = achievements
+    .filter((achievement) => achievement.unlocked)
+    .slice(0, 3);
 
   return (
     <aside className="side-stack">
@@ -122,13 +128,25 @@ export function SideStack({
         </div>
 
         <div className="badges" id="badges">
-          {achievements.map((achievement) => (
-            <div key={achievement.title}>
-              <div className="badge-mark">{achievement.icon}</div>
-              <div className="badge-title">{achievement.title}</div>
-              <div className="badge-copy">{achievement.description}</div>
-            </div>
-          ))}
+          {highlightedAchievements.length > 0 ? (
+            highlightedAchievements.map((achievement) => (
+              <div key={achievement.id}>
+                <div className="badge-mark">{achievement.icon}</div>
+                <div className="badge-title">{achievement.title}</div>
+                <div className="badge-copy">Freigeschaltet</div>
+              </div>
+            ))
+          ) : (
+            achievements.slice(0, 3).map((achievement) => (
+              <div key={achievement.id}>
+                <div className="badge-mark locked">{achievement.icon}</div>
+                <div className="badge-title">{achievement.title}</div>
+                <div className="badge-copy">
+                  {achievement.progress} / {achievement.target}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
     </aside>
