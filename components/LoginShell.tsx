@@ -1,9 +1,3 @@
-// Meta
-// Version: 0.1.0
-// Created: 2026-06-07
-// Updated: 2026-06-07
-// Purpose: Public landing screen before Keycloak authentication.
-
 import Image from "next/image";
 
 import { SignInButton } from "@/components/AuthButtons";
@@ -27,11 +21,10 @@ export function LoginShell() {
         </div>
 
         <div className="login-copy">
-          <span className="pill">A-Corp Care Utility</span>
+          <span className="pill">Kanninchenpflege App</span>
           <h1>Kaninchen Quest</h1>
           <p>
-            Pflegeaufgaben, Fortschritt, Streak und kleine Erfolge — geschützt über Keycloak
-            und sauber in PostgreSQL gespeichert.
+            Pflegeaufgaben, Fortschritt, Streak und kleine Erfolge
           </p>
           <div className="login-actions">
             <SignInButton />
@@ -39,16 +32,6 @@ export function LoginShell() {
           </div>
         </div>
 
-        <div className="qr-card">
-          <Image
-            src="/kaninchen-app-qr.png"
-            alt="QR-Code für die ursprüngliche Kaninchen Quest App"
-            width={144}
-            height={144}
-            priority
-          />
-          <small>Original-QR aus der Vorlage</small>
-        </div>
       </section>
     </main>
   );

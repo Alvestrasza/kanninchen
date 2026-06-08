@@ -1,11 +1,5 @@
 "use client";
 
-// Meta
-// Version: 0.1.0
-// Created: 2026-06-07
-// Updated: 2026-06-07
-// Purpose: Main interactive Kaninchen Quest dashboard with Motion animations and server persistence.
-
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState, useTransition } from "react";
 
@@ -434,7 +428,7 @@ function SideStack({
         <div>
           <div className="panel-title">Streak</div>
           <div className="streak-number">
-            <span>{15 + completedCount}</span> Tage in Folge
+            <span>{completedCount}</span> Tage in Folge
           </div>
           <p>Weiter so! Du bist großartig!</p>
         </div>
@@ -542,8 +536,8 @@ function SecondaryView({
       <>
         <h2>Einstellungen</h2>
         <p>
-          Der Fortschritt wird nicht mehr lokal im Browser gespeichert, sondern pro Keycloak-Benutzer
-          in PostgreSQL.
+          Der Fortschritt wird nicht mehr lokal im Browser gespeichert, sondern pro Benutzer
+          in einer Datenbank.
         </p>
         <div className="mobile-grid">
           <div className="info-tile">
@@ -578,11 +572,11 @@ function SecondaryView({
           <br />Aufgaben erledigt
         </div>
         <div className="info-tile">
-          <strong>{15 + completedCount}</strong>
+          <strong>{completedCount}</strong>
           <br />Tage Streak
         </div>
         <div className="info-tile">
-          <strong>{650 + completedCount * 40}</strong>
+          <strong>{completedCount * 40}</strong>
           <br />Erfahrungspunkte
         </div>
       </div>

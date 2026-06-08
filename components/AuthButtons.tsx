@@ -1,9 +1,3 @@
-// Meta
-// Version: 0.1.0
-// Created: 2026-06-07
-// Updated: 2026-06-07
-// Purpose: Server-side Auth.js sign-in and sign-out buttons.
-
 import { signIn, signOut } from "@/auth";
 
 export function SignInButton() {
@@ -15,7 +9,7 @@ export function SignInButton() {
       }}
     >
       <button className="login-button" type="submit">
-        Mit Keycloak anmelden
+        Bitte anmelden
       </button>
     </form>
   );
