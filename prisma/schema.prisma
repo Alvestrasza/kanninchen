@@ -2,7 +2,7 @@
 // Version: 0.1.0
 // Created: 2026-06-07
 // Updated: 2026-06-07
-// Purpose: Prisma schema for Kaninchen Quest with Auth.js/Keycloak and PostgreSQL persistence.
+// Purpose: Prisma schema for Kaninchen Quest with Auth.js and database persistence.
 
 generator client {
   provider = "prisma-client-js"

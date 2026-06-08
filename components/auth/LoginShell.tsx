@@ -1,6 +1,5 @@
-import Image from "next/image";
-
-import { SignInButton } from "@/components/AuthButtons";
+import { SignInButton } from "@/components/auth/AuthButtons";
+import { BunnyCard } from "@/components/rabbit/BunnyCard";
 
 export function LoginShell() {
   return (
@@ -9,16 +8,7 @@ export function LoginShell() {
       <div className="ambient-orb orb-two" />
 
       <section className="login-card panel">
-        <div className="bunny-card login-bunny" aria-hidden="true">
-          <div className="bunny-ears" />
-          <div className="bunny-face">
-            <span className="eye left" />
-            <span className="eye right" />
-            <span className="nose" />
-            <span className="smile" />
-          </div>
-          <div className="food-bowl">🥬</div>
-        </div>
+        <BunnyCard className="login-bunny" />
 
         <div className="login-copy">
           <span className="pill">Kanninchenpflege App</span>

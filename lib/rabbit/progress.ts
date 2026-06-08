@@ -4,8 +4,8 @@
 // Updated: 2026-06-07
 // Purpose: Persistence helpers for user-specific rabbit task progress.
 
-import { prisma } from "@/lib/prisma";
-import { rabbitTasks } from "@/data/tasks";
+import { prisma } from "@/lib/db/prisma";
+import { rabbitTasks } from "@/data/rabbit/tasks";
 
 export type TaskProgressState = Record<
   string,

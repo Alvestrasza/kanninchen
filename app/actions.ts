@@ -6,9 +6,9 @@ import { auth } from "@/auth";
 import {
   resetAllProgress,
   setActiveTask,
-  TaskProgressState,
+  type TaskProgressState,
   upsertTaskProgress,
-} from "@/lib/progress";
+} from "@/lib/rabbit/progress";
 
 async function requireUserId(): Promise<string> {
   const session = await auth();

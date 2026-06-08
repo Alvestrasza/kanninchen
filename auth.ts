@@ -2,13 +2,13 @@
 // Version: 0.1.0
 // Created: 2026-06-07
 // Updated: 2026-06-07
-// Purpose: Auth.js configuration for Keycloak login and database sessions.
+// Purpose: Auth.js configuration for external login and database sessions.
 
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db/prisma";
 
 function requiredEnv(name: string): string {
   const value = process.env[name];

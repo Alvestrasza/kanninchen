@@ -4,31 +4,7 @@
 // Updated: 2026-06-07
 // Purpose: Static Kaninchen Quest task catalog migrated from the original single-page app.
 
-export type RabbitTask = {
-  id: string;
-  icon: string;
-  title: string;
-  type: string;
-  description: string;
-  weekly?: string;
-  subtasks: Array<{
-    icon: string;
-    title: string;
-    description: string;
-  }>;
-};
-
-export type RabbitMetric = {
-  icon: string;
-  label: string;
-  value: number;
-};
-
-export type Achievement = {
-  icon: string;
-  title: string;
-  description: string;
-};
+import type { Achievement, RabbitMetric, RabbitTask } from "@/types/rabbit";
 
 export const rabbitTasks: RabbitTask[] = [
   {

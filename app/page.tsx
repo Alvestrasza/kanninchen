@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import { LoginShell } from "@/components/LoginShell";
-import { RabbitQuestApp } from "@/components/RabbitQuestApp";
-import { getUserProgress } from "@/lib/progress";
+import { LoginShell } from "@/components/auth/LoginShell";
+import { RabbitQuestApp } from "@/components/rabbit/RabbitQuestApp";
+import { getUserProgress } from "@/lib/rabbit/progress";
 
 export default async function HomePage() {
   const session = await auth();

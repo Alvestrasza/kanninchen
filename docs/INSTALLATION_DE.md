@@ -175,7 +175,7 @@ set -a
 source /etc/kanninchen/kanninchen.env
 set +a
 
-git pull
+git pull --ff-only
 npm install
 npx --no-install prisma generate
 npx --no-install prisma migrate deploy
