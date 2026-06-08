@@ -11,6 +11,7 @@ type SecondaryViewProps = {
   totalXp: number;
   achievements: RabbitAchievementView[];
   onReset: () => void;
+  onResetAll: () => void;
 };
 
 const rabbitGuideItems = [
@@ -58,6 +59,7 @@ export function SecondaryView({
   totalXp,
   achievements,
   onReset,
+  onResetAll,
 }: SecondaryViewProps) {
   if (view === "rabbits") {
     return (
@@ -89,24 +91,68 @@ export function SecondaryView({
 
   if (view === "achievements") {
     const unlockedCount = achievements.filter((achievement) => achievement.unlocked).length;
+    const nextAchievements = achievements
+      .filter((achievement) => !achievement.unlocked)
+      .sort((left, right) => right.percent - left.percent)
+      .slice(0, 3);
 
     return (
       <>
         <h2>Erfolge</h2>
 
-        <p>
-          {unlockedCount} von {achievements.length} Erfolgen freigeschaltet.
-          Jeder Erfolg zeigt dir, wie weit du schon gekommen bist.
-        </p>
+        <div className="achievement-summary">
+          <div>
+            <strong>
+              {unlockedCount} / {achievements.length}
+            </strong>
+            <span>Erfolge freigeschaltet</span>
+          </div>
 
-        <div className="badges expanded-badges">
+          <div>
+            <strong>{nextAchievements[0]?.percent ?? 100} %</strong>
+            <span>Nächster Erfolg</span>
+          </div>
+        </div>
+
+        {nextAchievements.length > 0 && (
+          <section className="achievement-next">
+            <div className="section-label">Fast geschafft</div>
+
+            <div className="achievement-next-list">
+              {nextAchievements.map((achievement) => (
+                <article className="achievement-mini-card" key={achievement.id}>
+                  <span>{achievement.icon}</span>
+
+                  <div>
+                    <strong>{achievement.title}</strong>
+                    <small>
+                      {achievement.progress} / {achievement.target}
+                    </small>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="achievement-grid">
           {achievements.map((achievement) => (
-            <div
-              className={`guide-card achievement-card${achievement.unlocked ? " unlocked" : " locked"}`}
+            <motion.article
+              className={`achievement-card${achievement.unlocked ? " unlocked" : " locked"}`}
               key={achievement.id}
+              layout
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22 }}
             >
-              <div className={`badge-mark${achievement.unlocked ? "" : " locked"}`}>
-                {achievement.icon}
+              <div className="achievement-card-head">
+                <div className={`badge-mark${achievement.unlocked ? "" : " locked"}`}>
+                  {achievement.icon}
+                </div>
+
+                <span className={`achievement-status${achievement.unlocked ? " unlocked" : ""}`}>
+                  {achievement.unlocked ? "Freigeschaltet" : "Offen"}
+                </span>
               </div>
 
               <h3>{achievement.title}</h3>
@@ -114,9 +160,13 @@ export function SecondaryView({
               <p>{achievement.description}</p>
 
               <div className="achievement-progress">
-                <span>
-                  {achievement.progress} / {achievement.target}
-                </span>
+                <div className="achievement-progress-line">
+                  <span>
+                    {achievement.progress} / {achievement.target}
+                  </span>
+
+                  <strong>{achievement.percent} %</strong>
+                </div>
 
                 <div className="xp-track">
                   <motion.span
@@ -125,13 +175,7 @@ export function SecondaryView({
                   />
                 </div>
               </div>
-
-              <small>
-                {achievement.unlocked
-                  ? "Freigeschaltet"
-                  : "Noch nicht freigeschaltet"}
-              </small>
-            </div>
+            </motion.article>
           ))}
         </div>
       </>
@@ -144,8 +188,8 @@ export function SecondaryView({
         <h2>Einstellungen</h2>
 
         <p>
-          Der Fortschritt wird nicht mehr lokal im Browser gespeichert, sondern pro Benutzer
-          in einer Datenbank.
+          Der Fortschritt wird pro Benutzer in der Datenbank gespeichert.
+          Der vollständige Reset ist nur für die Testphase gedacht.
         </p>
 
         <div className="mobile-grid">
@@ -154,11 +198,21 @@ export function SecondaryView({
               {completedCount} / {totalTasks}
             </strong>
             <br />
-            Aufgaben erledigt
+            Tagesaufgaben erledigt
+          </div>
+
+          <div className="info-tile">
+            <strong>{totalXp.toLocaleString("de-DE")}</strong>
+            <br />
+            XP gespeichert
           </div>
 
           <button className="danger-button" type="button" onClick={onReset}>
-            Fortschritt zurücksetzen
+            Nur Tagesfortschritt zurücksetzen
+          </button>
+
+          <button className="danger-button danger-button-strong" type="button" onClick={onResetAll}>
+            Test-Reset: Aufgaben, XP und Erfolge löschen
           </button>
         </div>
       </>

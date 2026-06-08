@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import {
   resetAllProgress,
+  resetAllUserRabbitData,
   setActiveTask,
   type ProgressUpdateResult,
   upsertTaskProgress,
@@ -40,6 +41,13 @@ export async function setActiveTaskAction(taskId: string): Promise<string> {
 export async function resetProgressAction(): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
   const result = await resetAllProgress(userId);
+  revalidatePath("/");
+  return result;
+}
+
+export async function resetAllRabbitDataAction(): Promise<ProgressUpdateResult> {
+  const userId = await requireUserId();
+  const result = await resetAllUserRabbitData(userId);
   revalidatePath("/");
   return result;
 }

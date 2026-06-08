@@ -337,3 +337,50 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
     unlockedAchievementIds: [],
   };
 }
+
+export async function resetAllUserRabbitData(userId: string): Promise<ProgressUpdateResult> {
+  const dateKey = getTodayDateKey();
+
+  await prisma.$transaction([
+    prisma.rabbitAchievementUnlock.deleteMany({
+      where: {
+        userId,
+      },
+    }),
+    prisma.rabbitXpEvent.deleteMany({
+      where: {
+        userId,
+      },
+    }),
+    prisma.rabbitTaskProgress.deleteMany({
+      where: {
+        userId,
+      },
+    }),
+    prisma.rabbitUserPreference.upsert({
+      where: {
+        userId,
+      },
+      update: {
+        activeTaskId: getDefaultActiveTaskId(),
+        activeDateKey: dateKey,
+      },
+      create: {
+        userId,
+        activeTaskId: getDefaultActiveTaskId(),
+        activeDateKey: dateKey,
+      },
+    }),
+  ]);
+
+  const state = await getUserProgress(userId);
+
+  return {
+    progress: state.progress,
+    streakCount: state.streakCount,
+    totalXp: state.totalXp,
+    awardedXp: 0,
+    achievements: state.achievements,
+    unlockedAchievementIds: [],
+  };
+}

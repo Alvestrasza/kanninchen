@@ -2,7 +2,12 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState, useTransition } from "react";
-import { resetProgressAction, saveTaskProgressAction, setActiveTaskAction } from "@/app/actions";
+import {
+  resetAllRabbitDataAction,
+  resetProgressAction,
+  saveTaskProgressAction,
+  setActiveTaskAction,
+} from "@/app/actions";
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
@@ -133,18 +138,44 @@ export function RabbitQuestApp({
     saveSubtasks(activeTask.id, nextSubtasks, "Quest abgeschlossen und gespeichert.");
   };
 
-  const resetProgress = () => {
+const resetProgress = () => {
+  startTransition(async () => {
+    try {
+      const result = await resetProgressAction();
+
+      setProgress(result.progress);
+      setStreakCount(result.streakCount);
+      setTotalXp(result.totalXp);
+      setAchievements(result.achievements);
+      setRecentUnlockIds([]);
+      setMessage("Tagesfortschritt wurde zurückgesetzt. XP und Erfolge bleiben erhalten.");
+    } catch {
+      setMessage("Zurücksetzen fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
+    }
+  });
+};
+
+  const resetAllRabbitData = () => {
+    const confirmed = window.confirm(
+      "Wirklich alles zurücksetzen? Aufgaben, XP und Erfolge werden für diesen Benutzer gelöscht.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     startTransition(async () => {
       try {
-        const result = await resetProgressAction();
+        const result = await resetAllRabbitDataAction();
 
         setProgress(result.progress);
         setStreakCount(result.streakCount);
         setTotalXp(result.totalXp);
         setAchievements(result.achievements);
-        setMessage("Tagesfortschritt wurde zurückgesetzt. XP und Erfolge bleiben erhalten.");
+        setRecentUnlockIds([]);
+        setMessage("Test-Reset abgeschlossen. Aufgaben, XP und Erfolge wurden zurückgesetzt.");
       } catch {
-        setMessage("Zurücksetzen fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
+        setMessage("Vollständiger Reset fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
       }
     });
   };
@@ -226,6 +257,7 @@ export function RabbitQuestApp({
             totalXp={totalXp}
             achievements={achievements}
             onReset={resetProgress}
+            onResetAll={resetAllRabbitData}
           />
           </motion.section>
         )}
