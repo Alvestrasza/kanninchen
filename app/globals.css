@@ -221,6 +221,24 @@ button {
   color: #cff6ff;
 }
 
+.task-item.completed {
+  opacity: 0.62;
+  border-color: rgba(127, 206, 77, 0.32);
+  background: rgba(4, 28, 44, 0.48);
+}
+
+.task-item.completed .task-name {
+  color: rgba(214, 244, 255, 0.72);
+}
+
+.task-item.completed .task-meta {
+  color: rgba(127, 206, 77, 0.88);
+}
+
+.task-item.completed .task-icon {
+  filter: grayscale(0.25);
+}
+
 .task-icon {
   font-size: 1.8rem;
   text-align: center;
