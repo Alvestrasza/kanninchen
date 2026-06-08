@@ -14,12 +14,9 @@ Meta:
 Empfohlene Pfade analog zu den bisherigen Webprojekten:
 
 ```text
-/opt/sites/kanninchen.dev/app
-/opt/sites/kanninchen.prod/app
-/etc/kanninchen.dev/kanninchen.env
-/etc/kanninchen.prod/kanninchen.env
-/opt/logs/kanninchen.dev
-/opt/logs/kanninchen.prod
+/opt/sites/kanninchen/app
+/etc/kanninchen/kanninchen.env
+/opt/logs/kanninchen
 ```
 
 ## 2. Systempakete
@@ -44,7 +41,7 @@ Beispiel für:
 
 ```bash
 sudo mkdir -p /opt/sites/kanninchen/app
-sudo chown -R webapps:kanninchen_editors /opt/sites/kanninchen/app
+sudo chown -R webapps:webadmins /opt/sites/kanninchen/app
 sudo chmod 2770 /opt/sites/kanninchen/app
 ```
 
@@ -167,3 +164,22 @@ Web origins: https://kanninchen.yourdomain.com
 ```
 
 Den Client Secret Wert in `/etc/kanninchen/kanninchen.env` eintragen.
+
+
+
+# Manuelle Änderungen:
+
+cd /opt/sites/kanninchen/app
+
+set -a
+source /etc/kanninchen/kanninchen.env
+set +a
+
+git pull
+npm install
+npx --no-install prisma generate
+npx --no-install prisma migrate deploy
+npm run build
+
+sudo systemctl restart kanninchen.service
+sudo systemctl status kanninchen.service
