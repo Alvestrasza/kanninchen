@@ -12,6 +12,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "🥬",
     title: "Kaninchen füttern",
     type: "Tägliche Aufgabe",
+    frequency: "daily",
     description:
       "Sorge dafür, dass deine Kaninchen täglich frisches Futter erhalten, um gesund und glücklich zu bleiben.",
     subtasks: [
@@ -39,6 +40,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "💧",
     title: "Frisches Wasser geben",
     type: "Tägliche Aufgabe",
+    frequency: "daily",
     description:
       "Fülle die Trinknäpfe und Flaschen mit sauberem Wasser und prüfe, ob alles gut erreichbar ist.",
     subtasks: [
@@ -63,7 +65,8 @@ export const rabbitTasks: RabbitTask[] = [
     id: "clean",
     icon: "🧹",
     title: "Kaninchenstall ausmisten",
-    type: "Tägliche Aufgabe",
+    type: "Wöchentliche Aufgabe",
+    frequency: "weekly",
     description:
       "Halte den Stall sauber, trocken und angenehm, damit deine Tiere entspannt bleiben.",
     subtasks: [
@@ -89,6 +92,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "🥕",
     title: "Heu nachfüllen",
     type: "Tägliche Aufgabe",
+    frequency: "daily",
     description:
       "Heu ist die Basis der Kaninchenernährung. Sorge für einen dauerhaft gefüllten Vorrat.",
     subtasks: [
@@ -114,6 +118,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "💖",
     title: "Gesundheitscheck",
     type: "Tägliche Aufgabe",
+    frequency: "daily",
     description: "Ein kurzer Check hilft, Veränderungen früh zu bemerken.",
     subtasks: [
       {
@@ -138,6 +143,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "🐇",
     title: "Freilauf vorbereiten",
     type: "Tägliche Aufgabe",
+    frequency: "daily",
     description: "Schaffe einen sicheren Bereich zum Hoppeln, Erkunden und Toben.",
     subtasks: [
       {
@@ -161,7 +167,8 @@ export const rabbitTasks: RabbitTask[] = [
     id: "toys",
     icon: "🏐",
     title: "Beschäftigung prüfen",
-    type: "Tägliche Aufgabe",
+    type: "Regelmäßige Aufgabe",
+    frequency: "asNeeded",
     description: "Abwechslung hält die Tiere neugierig und zufrieden.",
     subtasks: [
       {
@@ -185,7 +192,8 @@ export const rabbitTasks: RabbitTask[] = [
     id: "fur",
     icon: "🐑",
     title: "Fellkontrolle",
-    type: "Tägliche Aufgabe",
+    type: "Wöchentliche Aufgabe",
+    frequency: "weekly",
     description: "Ein gepflegtes Fell schützt und zeigt, ob sich deine Kaninchen wohlfühlen.",
     subtasks: [
       {
@@ -209,7 +217,8 @@ export const rabbitTasks: RabbitTask[] = [
     id: "claws",
     icon: "🐾",
     title: "Krallenkontrolle",
-    type: "Tägliche Aufgabe",
+    type: "Monatliche Aufgabe",
+    frequency: "monthly",
     description: "Behalte die Krallen im Blick, damit deine Kaninchen bequem laufen.",
     subtasks: [
       {
@@ -234,6 +243,7 @@ export const rabbitTasks: RabbitTask[] = [
     icon: "🗓",
     title: "Wochenaufgaben",
     type: "Wochenziel",
+    frequency: "weekly",
     description:
       "Sammle größere Pflegeaufgaben für das Wochenende und behalte den Überblick.",
     weekly: "0/5 erledigt",
@@ -265,7 +275,7 @@ export const achievements: Achievement[] = [
 
 export const baseMetrics: RabbitMetric[] = [
   { icon: "❤️", label: "Gesundheit", value: 100 },
-  { icon: "🥕", label: "Sättigung", value: 95 },
-  { icon: "💧", label: "Wasser", value: 80 },
-  { icon: "😊", label: "Glücklichkeit", value: 92 },
+  { icon: "🥕", label: "Sättigung", value: 100 },
+  { icon: "💧", label: "Wasser", value: 100 },
+  { icon: "😊", label: "Glücklichkeit", value: 100 },
 ];

@@ -30,7 +30,7 @@ function getTodayDateKey(date = new Date()): string {
 
 function getDailyTaskIds(): string[] {
   return rabbitTasks
-    .filter((task) => !task.weekly)
+    .filter((task) => task.frequency === "daily")
     .map((task) => task.id);
 }
 

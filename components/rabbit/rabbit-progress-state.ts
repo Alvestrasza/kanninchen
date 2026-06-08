@@ -19,6 +19,14 @@ export function completedFromSubtasks(taskId: string, progress: TaskProgressStat
   return task.subtasks.every((_, index) => Boolean(subtasks[index]));
 }
 
+export function getDailyTasks() {
+  return rabbitTasks.filter((task) => task.frequency === "daily");
+}
+
+export function getCompletedDailyCount(progress: TaskProgressState): number {
+  return getDailyTasks().filter((task) => completedFromSubtasks(task.id, progress)).length;
+}
+
 export function getCompletedCount(progress: TaskProgressState): number {
   return rabbitTasks.filter((task) => completedFromSubtasks(task.id, progress)).length;
 }

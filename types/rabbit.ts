@@ -1,14 +1,17 @@
 // Meta
-// Version: 0.1.0
+// Version: 0.1.1
 // Created: 2026-06-08
 // Updated: 2026-06-08
 // Purpose: Shared type definitions for Kaninchen Quest rabbit data and UI.
+
+export type RabbitTaskFrequency = "daily" | "weekly" | "monthly" | "asNeeded";
 
 export type RabbitTask = {
   id: string;
   icon: string;
   title: string;
   type: string;
+  frequency: RabbitTaskFrequency;
   description: string;
   weekly?: string;
   subtasks: Array<{

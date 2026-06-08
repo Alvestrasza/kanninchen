@@ -7,7 +7,13 @@ import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
-import { completedFromSubtasks, getCompletedCount, normalizeTaskSubtasks } from "@/components/rabbit/rabbit-progress-state";
+import {
+  completedFromSubtasks,
+  getCompletedCount,
+  getCompletedDailyCount,
+  getDailyTasks,
+  normalizeTaskSubtasks,
+} from "@/components/rabbit/rabbit-progress-state";
 import { QuestPanel } from "@/components/rabbit/QuestPanel";
 import { SideStack } from "@/components/rabbit/SideStack";
 import { SecondaryView } from "@/components/rabbit/SecondaryView";
@@ -42,8 +48,10 @@ export function RabbitQuestApp({
   const activeSubtasks = normalizeTaskSubtasks(activeTask.id, progress);
   const activeCompleted = completedFromSubtasks(activeTask.id, progress);
   const completedCount = getCompletedCount(progress);
-  const totalTasks = rabbitTasks.length;
-  const percent = Math.round((completedCount / totalTasks) * 100);
+  const completedDailyCount = getCompletedDailyCount(progress);
+  const totalDailyTasks = getDailyTasks().length;
+  const percent =
+    totalDailyTasks > 0 ? Math.round((completedDailyCount / totalDailyTasks) * 100) : 0;
   const litSegments = Math.round((percent / 100) * 15);
   const isPrimaryView = view === "home" || view === "quests";
 
@@ -149,12 +157,12 @@ export function RabbitQuestApp({
             exit={{ opacity: 0, y: -10, scale: 0.99 }}
             transition={{ duration: 0.24 }}
           >
-            <SecondaryView
-              view={view}
-              completedCount={completedCount}
-              totalTasks={totalTasks}
-              onReset={resetProgress}
-            />
+          <SecondaryView
+            view={view}
+            completedCount={completedDailyCount}
+            totalTasks={totalDailyTasks}
+            onReset={resetProgress}
+          />
           </motion.section>
         )}
       </AnimatePresence>
