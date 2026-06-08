@@ -18,6 +18,7 @@ export default async function HomePage() {
       initialActiveTaskId={state.activeTaskId}
       initialProgress={state.progress}
       initialStreakCount={state.streakCount}
+      initialTotalXp={state.totalXp}
     />
   );
 }

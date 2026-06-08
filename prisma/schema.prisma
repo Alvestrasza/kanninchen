@@ -21,6 +21,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  xpEvents      RabbitXpEvent[]
 
   taskProgress  RabbitTaskProgress[]
   journalEntries RabbitJournalEntry[]
@@ -92,6 +93,7 @@ model RabbitTaskProgress {
   completedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  xpEvents RabbitXpEvent[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -140,4 +142,26 @@ model RabbitUserPreference {
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RabbitXpEvent {
+  id             String   @id @default(cuid())
+  userId         String
+  taskProgressId String?
+  taskId         String
+  dateKey        String
+  source         String   @default("task_completed")
+  frequency      String
+  amount         Int
+  reason         String?
+  awardedAt      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskProgress RabbitTaskProgress? @relation(fields: [taskProgressId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, taskId, dateKey, source])
+  @@index([userId, awardedAt])
+  @@index([userId, source])
+  @@index([taskId, dateKey])
 }

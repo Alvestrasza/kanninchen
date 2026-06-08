@@ -6,6 +6,7 @@
 
 import { prisma } from "@/lib/db/prisma";
 import { rabbitTasks } from "@/data/rabbit/tasks";
+import { awardTaskCompletionXp, getUserTotalXp } from "@/lib/rabbit/xp";
 
 const APP_TIME_ZONE = "Europe/Berlin";
 
@@ -115,11 +116,14 @@ export type UserProgressState = {
   activeTaskId: string;
   progress: TaskProgressState;
   streakCount: number;
+  totalXp: number;
 };
 
 export type ProgressUpdateResult = {
   progress: TaskProgressState;
   streakCount: number;
+  totalXp: number;
+  awardedXp: number;
 };
 
 function normalizeSubtasks(value: unknown, length: number): boolean[] {
@@ -190,13 +194,18 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
     });
   }
 
-  const streakCount = await getUserStreak(userId);
+  const [streakCount, totalXp] = await Promise.all([
+    getUserStreak(userId),
+    getUserTotalXp(userId),
+  ]);
 
   return {
     activeTaskId,
     progress,
     streakCount,
+    totalXp,
   };
+
 }
 
 export async function upsertTaskProgress(
@@ -214,14 +223,23 @@ export async function upsertTaskProgress(
   const normalized = normalizeSubtasks(subtasks, task.subtasks.length);
   const completed = normalized.every(Boolean);
 
-  await prisma.rabbitTaskProgress.upsert({
-    where: {
-      userId_taskId_dateKey: {
-        userId,
-        taskId,
-        dateKey,
-      },
+  const where = {
+    userId_taskId_dateKey: {
+      userId,
+      taskId,
+      dateKey,
     },
+  };
+
+  const existing = await prisma.rabbitTaskProgress.findUnique({
+    where,
+    select: {
+      completed: true,
+    },
+  });
+
+  const savedProgress = await prisma.rabbitTaskProgress.upsert({
+    where,
     update: {
       subtasks: normalized,
       completed,
@@ -235,13 +253,29 @@ export async function upsertTaskProgress(
       completed,
       completedAt: completed ? new Date() : null,
     },
+    select: {
+      id: true,
+    },
   });
+
+  let awardedXp = 0;
+
+  if (completed && !existing?.completed) {
+    awardedXp = await awardTaskCompletionXp({
+      userId,
+      taskProgressId: savedProgress.id,
+      taskId,
+      dateKey,
+    });
+  }
 
   const state = await getUserProgress(userId);
 
   return {
     progress: state.progress,
     streakCount: state.streakCount,
+    totalXp: state.totalXp,
+    awardedXp,
   };
 }
 
@@ -281,5 +315,7 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
   return {
     progress: state.progress,
     streakCount: state.streakCount,
+    totalXp: state.totalXp,
+    awardedXp: 0,
   };
 }

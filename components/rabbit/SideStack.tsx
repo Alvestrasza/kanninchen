@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "motion/react";
-
 import { achievements, baseMetrics } from "@/data/rabbit/tasks";
+import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 
 type SideStackProps = {
   completedCount: number;
   streakCount: number;
+  totalXp: number;
   percent: number;
   litSegments: number;
   onShowAchievements: () => void;
@@ -17,9 +18,13 @@ export function SideStack({
   streakCount,
   percent,
   litSegments,
+  totalXp,
   onShowAchievements,
 }: SideStackProps) {
   const bonus = Math.min(8, completedCount);
+  const levelInfo = getCaretakerLevelInfo(totalXp);
+  const formattedTotalXp = levelInfo.totalXp.toLocaleString("de-DE");
+  const formattedNextLevelXp = levelInfo.nextLevelXp.toLocaleString("de-DE");
 
   return (
     <aside className="side-stack">
@@ -86,20 +91,24 @@ export function SideStack({
 
       <section className="panel level-panel">
         <div className="level-badge">
-          <span>{completedCount >= 9 ? 8 : 7}</span>
+          <span>{levelInfo.level}</span>
         </div>
 
         <div className="level-copy">
-          <div>Tierpfleger Level {completedCount >= 9 ? 8 : 7}</div>
+          <div>{levelInfo.title}</div>
 
           <div className="xp-track">
             <motion.span
               initial={{ width: 0 }}
-              animate={{ width: `${Math.min(100, 65 + completedCount * 4)}%` }}
+              animate={{ width: `${levelInfo.percent}%` }}
             />
           </div>
 
-          <small>{650 + completedCount * 40} / 1000 XP</small>
+          <small>
+            {levelInfo.isMaxLevel
+              ? `${formattedTotalXp} XP erreicht`
+              : `${formattedTotalXp} / ${formattedNextLevelXp} XP`}
+          </small>
         </div>
       </section>
 

@@ -25,6 +25,7 @@ type RabbitQuestAppProps = {
   initialActiveTaskId: string;
   initialProgress: TaskProgressState;
   initialStreakCount: number;
+  initialTotalXp: number;
 };
 
 export function RabbitQuestApp({
@@ -32,14 +33,16 @@ export function RabbitQuestApp({
   initialActiveTaskId,
   initialProgress,
   initialStreakCount,
+  initialTotalXp,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
-  const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
-  const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
-  const [streakCount, setStreakCount] = useState(initialStreakCount);
-  const [view, setView] = useState<RabbitView>("quests");
-  const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
-  const [isPending, startTransition] = useTransition();
+const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
+const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
+const [streakCount, setStreakCount] = useState(initialStreakCount);
+const [totalXp, setTotalXp] = useState(initialTotalXp);
+const [view, setView] = useState<RabbitView>("quests");
+const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
+const [isPending, startTransition] = useTransition();
 
   const activeTask = useMemo(
     () => rabbitTasks.find((task) => task.id === activeTaskId) ?? rabbitTasks[0],
@@ -76,8 +79,16 @@ export function RabbitQuestApp({
     startTransition(async () => {
       try {
         const result = await saveTaskProgressAction(taskId, nextSubtasks);
+
         setProgress(result.progress);
         setStreakCount(result.streakCount);
+        setTotalXp(result.totalXp);
+
+        setMessage(
+          result.awardedXp > 0
+            ? `${successMessage} +${result.awardedXp} XP`
+            : successMessage,
+        );
       } catch {
         setMessage("Speichern fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
       }
@@ -100,9 +111,11 @@ export function RabbitQuestApp({
     startTransition(async () => {
       try {
         const result = await resetProgressAction();
+
         setProgress(result.progress);
         setStreakCount(result.streakCount);
-        setMessage("Fortschritt wurde zurückgesetzt.");
+        setTotalXp(result.totalXp);
+        setMessage("Tagesfortschritt wurde zurückgesetzt. XP bleiben erhalten.");
       } catch {
         setMessage("Zurücksetzen fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
       }
@@ -145,6 +158,7 @@ export function RabbitQuestApp({
               streakCount={streakCount}
               percent={percent}
               litSegments={litSegments}
+              totalXp={totalXp}
               onShowAchievements={() => setCurrentView("achievements")}
             />
           </motion.main>
@@ -161,6 +175,7 @@ export function RabbitQuestApp({
             view={view}
             completedCount={completedDailyCount}
             totalTasks={totalDailyTasks}
+            totalXp={totalXp}
             onReset={resetProgress}
           />
           </motion.section>

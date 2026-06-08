@@ -9,6 +9,7 @@ type SecondaryViewProps = {
   view: RabbitView;
   completedCount: number;
   totalTasks: number;
+  totalXp: number;
   onReset: () => void;
 };
 
@@ -54,6 +55,7 @@ export function SecondaryView({
   view,
   completedCount,
   totalTasks,
+  totalXp,
   onReset,
 }: SecondaryViewProps) {
   if (view === "rabbits") {
@@ -158,7 +160,7 @@ export function SecondaryView({
         </div>
 
         <div className="info-tile">
-          <strong>{completedCount * 40}</strong>
+          <strong>{totalXp.toLocaleString("de-DE")}</strong>
           <br />
           Erfahrungspunkte
         </div>
