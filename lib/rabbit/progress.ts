@@ -34,6 +34,10 @@ function getDailyTaskIds(): string[] {
     .map((task) => task.id);
 }
 
+function getDefaultActiveTaskId(): string {
+  return rabbitTasks.find((task) => task.frequency === "daily")?.id ?? rabbitTasks[0]?.id ?? "feed";
+}
+
 function getPreviousDateKey(dateKey: string): string {
   const [year, month, day] = dateKey.split("-").map(Number);
 
@@ -143,8 +147,15 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
     prisma.rabbitUserPreference.upsert({
       where: { userId },
       update: {},
-      create: { userId, activeTaskId: "feed" },
-      select: { activeTaskId: true },
+      create: {
+        userId,
+        activeTaskId: getDefaultActiveTaskId(),
+        activeDateKey: dateKey,
+      },
+      select: {
+        activeTaskId: true,
+        activeDateKey: true,
+      },
     }),
   ]);
 
@@ -164,11 +175,25 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
   ) as TaskProgressState;
 
   const taskExists = rabbitTasks.some((task) => task.id === preference.activeTaskId);
+  const isSameDay = preference.activeDateKey === dateKey;
+
+  const activeTaskId =
+    isSameDay && taskExists ? preference.activeTaskId : getDefaultActiveTaskId();
+
+  if (preference.activeTaskId !== activeTaskId || preference.activeDateKey !== dateKey) {
+    await prisma.rabbitUserPreference.update({
+      where: { userId },
+      data: {
+        activeTaskId,
+        activeDateKey: dateKey,
+      },
+    });
+  }
 
   const streakCount = await getUserStreak(userId);
 
   return {
-    activeTaskId: taskExists ? preference.activeTaskId : "feed",
+    activeTaskId,
     progress,
     streakCount,
   };
@@ -221,13 +246,21 @@ export async function upsertTaskProgress(
 }
 
 export async function setActiveTask(userId: string, activeTaskId: string): Promise<string> {
+  const dateKey = getTodayDateKey();
   const taskExists = rabbitTasks.some((task) => task.id === activeTaskId);
-  const safeTaskId = taskExists ? activeTaskId : "feed";
+  const safeTaskId = taskExists ? activeTaskId : getDefaultActiveTaskId();
 
   await prisma.rabbitUserPreference.upsert({
     where: { userId },
-    update: { activeTaskId: safeTaskId },
-    create: { userId, activeTaskId: safeTaskId },
+    update: {
+      activeTaskId: safeTaskId,
+      activeDateKey: dateKey,
+    },
+    create: {
+      userId,
+      activeTaskId: safeTaskId,
+      activeDateKey: dateKey,
+    },
   });
 
   return safeTaskId;

@@ -131,12 +131,13 @@ model RabbitProfile {
 }
 
 model RabbitUserPreference {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  activeTaskId String   @default("feed")
-  reducedMotion Boolean @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  activeTaskId  String   @default("feed")
+  activeDateKey String   @default("legacy")
+  reducedMotion Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

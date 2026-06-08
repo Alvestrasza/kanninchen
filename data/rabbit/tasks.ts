@@ -64,7 +64,7 @@ export const rabbitTasks: RabbitTask[] = [
   {
     id: "clean",
     icon: "🧹",
-    title: "Kaninchenstall ausmisten",
+    title: "Stall ausmisten",
     type: "Wöchentliche Aufgabe",
     frequency: "weekly",
     description:
