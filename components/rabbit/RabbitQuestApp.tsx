@@ -44,6 +44,7 @@ export function RabbitQuestApp({
   const [streakCount, setStreakCount] = useState(initialStreakCount);
   const [totalXp, setTotalXp] = useState(initialTotalXp);
   const [achievements, setAchievements] = useState(initialAchievements);
+  const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("quests");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
   const [isPending, startTransition] = useTransition();
@@ -61,6 +62,9 @@ export function RabbitQuestApp({
     totalDailyTasks > 0 ? Math.round((completedDailyCount / totalDailyTasks) * 100) : 0;
   const litSegments = Math.round((percent / 100) * 15);
   const isPrimaryView = view === "home" || view === "quests";
+  const recentUnlocks = achievements.filter((achievement) =>
+    recentUnlockIds.includes(achievement.id),
+  );
 
   const selectTask = (taskId: string) => {
     setActiveTaskId(taskId);
@@ -90,6 +94,12 @@ export function RabbitQuestApp({
         setAchievements(result.achievements);
 
         if (result.unlockedAchievementIds.length > 0) {
+          setRecentUnlockIds(result.unlockedAchievementIds);
+
+          window.setTimeout(() => {
+            setRecentUnlockIds([]);
+          }, 4200);
+
           setMessage(
             result.awardedXp > 0
               ? `${successMessage} +${result.awardedXp} XP · Neuer Erfolg freigeschaltet!`
@@ -97,6 +107,8 @@ export function RabbitQuestApp({
           );
           return;
         }
+
+        setRecentUnlockIds([]);
 
         setMessage(
           result.awardedXp > 0
@@ -145,11 +157,31 @@ export function RabbitQuestApp({
     <div className="app-shell">
       <div className="scanline" aria-hidden="true" />
 
-      <TopNavigation view={view} onChangeView={setCurrentView} />
+        <TopNavigation view={view} onChangeView={setCurrentView} />
 
-      <UserStrip userName={userName} isPending={isPending} message={message} />
+        <UserStrip userName={userName} isPending={isPending} message={message} />
 
-      <AnimatePresence mode="wait">
+        <AnimatePresence>
+          {recentUnlocks.map((achievement) => (
+            <motion.div
+              className="achievement-toast"
+              key={achievement.id}
+              initial={{ opacity: 0, y: -18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.96 }}
+              transition={{ duration: 0.32, ease: "easeOut" }}
+            >
+              <div className="achievement-toast-icon">{achievement.icon}</div>
+
+              <div>
+                <strong>Neuer Erfolg!</strong>
+                <span>{achievement.title}</span>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
         {isPrimaryView ? (
           <motion.main
             key="dashboard"

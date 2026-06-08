@@ -1058,3 +1058,60 @@ a {
   margin-top: 0.65rem;
   color: var(--muted);
 }
+
+.achievement-toast {
+  position: fixed;
+  top: 5.4rem;
+  right: 5.7rem;
+  z-index: 50;
+  min-width: min(22rem, calc(100vw - 2rem));
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 211, 93, 0.72);
+  border-radius: 0.45rem;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 211, 93, 0.22), transparent 8rem),
+    linear-gradient(180deg, rgba(4, 34, 58, 0.97), rgba(1, 12, 22, 0.97));
+  box-shadow:
+    0 0 1.4rem rgba(255, 211, 93, 0.34),
+    inset 0 0 1.4rem rgba(0, 191, 255, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.achievement-toast-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid #e9b343;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #335063, #1c2a34);
+  box-shadow: 0 0 0.7rem rgba(255, 211, 93, 0.45);
+  font-size: 1.55rem;
+}
+
+.achievement-toast strong {
+  display: block;
+  color: var(--gold);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.achievement-toast span {
+  display: block;
+  margin-top: 0.12rem;
+  color: #d6f4ff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .achievement-toast {
+    top: 5rem;
+    right: 1rem;
+    left: 1rem;
+  }
+}
