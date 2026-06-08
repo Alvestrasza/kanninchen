@@ -7,6 +7,27 @@
 import { prisma } from "@/lib/db/prisma";
 import { rabbitTasks } from "@/data/rabbit/tasks";
 
+const APP_TIME_ZONE = "Europe/Berlin";
+
+function getTodayDateKey(date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("de-DE", {
+    timeZone: APP_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    throw new Error("Could not build date key.");
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
 export type TaskProgressState = Record<
   string,
   {
@@ -27,9 +48,13 @@ export async function getUserProgress(userId: string): Promise<{
   activeTaskId: string;
   progress: TaskProgressState;
 }> {
+  const dateKey = getTodayDateKey();
   const [records, preference] = await Promise.all([
     prisma.rabbitTaskProgress.findMany({
-      where: { userId },
+      where: {
+        userId,
+        dateKey,
+      },
       select: {
         taskId: true,
         completed: true,
@@ -72,6 +97,7 @@ export async function upsertTaskProgress(
   taskId: string,
   subtasks: boolean[],
 ): Promise<TaskProgressState> {
+  const dateKey = getTodayDateKey();
   const task = rabbitTasks.find((candidate) => candidate.id === taskId);
 
   if (!task) {
@@ -83,9 +109,10 @@ export async function upsertTaskProgress(
 
   await prisma.rabbitTaskProgress.upsert({
     where: {
-      userId_taskId: {
+      userId_taskId_dateKey: {
         userId,
         taskId,
+        dateKey,
       },
     },
     update: {
@@ -96,6 +123,7 @@ export async function upsertTaskProgress(
     create: {
       userId,
       taskId,
+      dateKey,
       subtasks: normalized,
       completed,
       completedAt: completed ? new Date() : null,
@@ -119,6 +147,14 @@ export async function setActiveTask(userId: string, activeTaskId: string): Promi
 }
 
 export async function resetAllProgress(userId: string): Promise<TaskProgressState> {
-  await prisma.rabbitTaskProgress.deleteMany({ where: { userId } });
+  const dateKey = getTodayDateKey();
+
+  await prisma.rabbitTaskProgress.deleteMany({
+    where: {
+      userId,
+      dateKey,
+    },
+  });
+
   return (await getUserProgress(userId)).progress;
 }

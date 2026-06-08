@@ -86,6 +86,7 @@ model RabbitTaskProgress {
   id          String   @id @default(cuid())
   userId      String
   taskId      String
+  dateKey     String   @default("legacy")
   subtasks    Json
   completed   Boolean  @default(false)
   completedAt DateTime?
@@ -94,7 +95,8 @@ model RabbitTaskProgress {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, taskId])
+  @@unique([userId, taskId, dateKey])
+  @@index([userId, dateKey])
   @@index([taskId])
 }
 
