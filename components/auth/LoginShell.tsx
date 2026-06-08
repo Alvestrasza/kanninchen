@@ -11,7 +11,7 @@ export function LoginShell() {
         <BunnyCard className="login-bunny" />
 
         <div className="login-copy">
-          <span className="pill">Kanninchenpflege App</span>
+          <span className="pill">Kaninchenpflege App</span>
           <h1>Kaninchen Quest</h1>
           <p>
             Pflegeaufgaben, Fortschritt, Streak und kleine Erfolge

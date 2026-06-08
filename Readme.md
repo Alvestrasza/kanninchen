@@ -34,7 +34,7 @@ The visual design is intentionally kept in the original Kaninchen Quest style.
 ## Project Structure
 
 ```text
-kanninchen/
+kaninchen/
 ├─ app/
 │  ├─ api/
 │  │  └─ auth/

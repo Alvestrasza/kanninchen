@@ -13,8 +13,8 @@ Wants=network-online.target
 Type=simple
 User=webapps
 Group=webapps
-WorkingDirectory=/opt/sites/kanninchen/app
-EnvironmentFile=/etc/kanninchen/kanninchen.env
+WorkingDirectory=/opt/sites/kaninchen/app
+EnvironmentFile=/etc/kaninchen/kaninchen.env
 Environment=NODE_ENV=production
 Environment=PORT=3004
 ExecStart=/usr/bin/npm run start -- --hostname 127.0.0.1 --port 3004
@@ -24,7 +24,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
 ProtectHome=true
-ReadWritePaths=/opt/sites/kanninchen/app/.next /opt/logs/kanninchen.
+ReadWritePaths=/opt/sites/kaninchen/app/.next /opt/logs/kaninchen.
 
 [Install]
 WantedBy=multi-user.target
