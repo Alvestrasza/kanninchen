@@ -17,6 +17,7 @@ export default async function HomePage() {
       userName={session.user.name ?? session.user.email ?? "Tierpfleger"}
       initialActiveTaskId={state.activeTaskId}
       initialProgress={state.progress}
+      initialStreakCount={state.streakCount}
     />
   );
 }

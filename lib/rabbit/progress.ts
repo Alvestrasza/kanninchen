@@ -28,6 +28,77 @@ function getTodayDateKey(date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
+function getDailyTaskIds(): string[] {
+  return rabbitTasks
+    .filter((task) => !task.weekly)
+    .map((task) => task.id);
+}
+
+function getPreviousDateKey(dateKey: string): string {
+  const [year, month, day] = dateKey.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    throw new Error(`Invalid date key: ${dateKey}`);
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() - 1);
+
+  return date.toISOString().slice(0, 10);
+}
+
+export async function getUserStreak(userId: string): Promise<number> {
+  const dailyTaskIds = getDailyTaskIds();
+
+  if (dailyTaskIds.length === 0) {
+    return 0;
+  }
+
+  const records = await prisma.rabbitTaskProgress.findMany({
+    where: {
+      userId,
+      completed: true,
+      taskId: {
+        in: dailyTaskIds,
+      },
+    },
+    select: {
+      dateKey: true,
+      taskId: true,
+    },
+  });
+
+  const completedTaskIdsByDate = new Map<string, Set<string>>();
+
+  for (const record of records) {
+    const taskIds = completedTaskIdsByDate.get(record.dateKey) ?? new Set<string>();
+    taskIds.add(record.taskId);
+    completedTaskIdsByDate.set(record.dateKey, taskIds);
+  }
+
+  let streakCount = 0;
+  let cursorDateKey = getTodayDateKey();
+
+  while (true) {
+    const completedTaskIds = completedTaskIdsByDate.get(cursorDateKey);
+
+    if (!completedTaskIds) {
+      break;
+    }
+
+    const allDailyTasksCompleted = dailyTaskIds.every((taskId) => completedTaskIds.has(taskId));
+
+    if (!allDailyTasksCompleted) {
+      break;
+    }
+
+    streakCount += 1;
+    cursorDateKey = getPreviousDateKey(cursorDateKey);
+  }
+
+  return streakCount;
+}
+
 export type TaskProgressState = Record<
   string,
   {
@@ -35,6 +106,17 @@ export type TaskProgressState = Record<
     subtasks: boolean[];
   }
 >;
+
+export type UserProgressState = {
+  activeTaskId: string;
+  progress: TaskProgressState;
+  streakCount: number;
+};
+
+export type ProgressUpdateResult = {
+  progress: TaskProgressState;
+  streakCount: number;
+};
 
 function normalizeSubtasks(value: unknown, length: number): boolean[] {
   if (!Array.isArray(value)) {
@@ -44,10 +126,7 @@ function normalizeSubtasks(value: unknown, length: number): boolean[] {
   return Array.from({ length }, (_, index) => Boolean(value[index]));
 }
 
-export async function getUserProgress(userId: string): Promise<{
-  activeTaskId: string;
-  progress: TaskProgressState;
-}> {
+export async function getUserProgress(userId: string): Promise<UserProgressState> {
   const dateKey = getTodayDateKey();
   const [records, preference] = await Promise.all([
     prisma.rabbitTaskProgress.findMany({
@@ -86,9 +165,12 @@ export async function getUserProgress(userId: string): Promise<{
 
   const taskExists = rabbitTasks.some((task) => task.id === preference.activeTaskId);
 
+  const streakCount = await getUserStreak(userId);
+
   return {
     activeTaskId: taskExists ? preference.activeTaskId : "feed",
     progress,
+    streakCount,
   };
 }
 
@@ -96,7 +178,7 @@ export async function upsertTaskProgress(
   userId: string,
   taskId: string,
   subtasks: boolean[],
-): Promise<TaskProgressState> {
+): Promise<ProgressUpdateResult> {
   const dateKey = getTodayDateKey();
   const task = rabbitTasks.find((candidate) => candidate.id === taskId);
 
@@ -130,7 +212,12 @@ export async function upsertTaskProgress(
     },
   });
 
-  return (await getUserProgress(userId)).progress;
+  const state = await getUserProgress(userId);
+
+  return {
+    progress: state.progress,
+    streakCount: state.streakCount,
+  };
 }
 
 export async function setActiveTask(userId: string, activeTaskId: string): Promise<string> {
@@ -146,7 +233,7 @@ export async function setActiveTask(userId: string, activeTaskId: string): Promi
   return safeTaskId;
 }
 
-export async function resetAllProgress(userId: string): Promise<TaskProgressState> {
+export async function resetAllProgress(userId: string): Promise<ProgressUpdateResult> {
   const dateKey = getTodayDateKey();
 
   await prisma.rabbitTaskProgress.deleteMany({
@@ -156,5 +243,10 @@ export async function resetAllProgress(userId: string): Promise<TaskProgressStat
     },
   });
 
-  return (await getUserProgress(userId)).progress;
+  const state = await getUserProgress(userId);
+
+  return {
+    progress: state.progress,
+    streakCount: state.streakCount,
+  };
 }

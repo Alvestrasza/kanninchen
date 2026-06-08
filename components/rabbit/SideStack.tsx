@@ -6,6 +6,7 @@ import { achievements, baseMetrics } from "@/data/rabbit/tasks";
 
 type SideStackProps = {
   completedCount: number;
+  streakCount: number;
   percent: number;
   litSegments: number;
   onShowAchievements: () => void;
@@ -13,6 +14,7 @@ type SideStackProps = {
 
 export function SideStack({
   completedCount,
+  streakCount,
   percent,
   litSegments,
   onShowAchievements,
@@ -73,7 +75,7 @@ export function SideStack({
           <div className="panel-title">Streak</div>
 
           <div className="streak-number">
-            <span>{completedCount}</span> Tage in Folge
+            <span>{streakCount}</span> Tage in Folge
           </div>
 
           <p>Weiter so! Du bist großartig!</p>

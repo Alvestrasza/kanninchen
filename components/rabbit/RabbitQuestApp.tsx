@@ -18,16 +18,19 @@ type RabbitQuestAppProps = {
   userName: string;
   initialActiveTaskId: string;
   initialProgress: TaskProgressState;
+  initialStreakCount: number;
 };
 
 export function RabbitQuestApp({
   userName,
   initialActiveTaskId,
   initialProgress,
+  initialStreakCount,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
   const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
+  const [streakCount, setStreakCount] = useState(initialStreakCount);
   const [view, setView] = useState<RabbitView>("quests");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
   const [isPending, startTransition] = useTransition();
@@ -64,8 +67,9 @@ export function RabbitQuestApp({
 
     startTransition(async () => {
       try {
-        const savedProgress = await saveTaskProgressAction(taskId, nextSubtasks);
-        setProgress(savedProgress);
+        const result = await saveTaskProgressAction(taskId, nextSubtasks);
+        setProgress(result.progress);
+        setStreakCount(result.streakCount);
       } catch {
         setMessage("Speichern fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
       }
@@ -87,8 +91,9 @@ export function RabbitQuestApp({
   const resetProgress = () => {
     startTransition(async () => {
       try {
-        const savedProgress = await resetProgressAction();
-        setProgress(savedProgress);
+        const result = await resetProgressAction();
+        setProgress(result.progress);
+        setStreakCount(result.streakCount);
         setMessage("Fortschritt wurde zurückgesetzt.");
       } catch {
         setMessage("Zurücksetzen fehlgeschlagen. Bitte prüfe Anmeldung und Datenbankverbindung.");
@@ -129,6 +134,7 @@ export function RabbitQuestApp({
             />
             <SideStack
               completedCount={completedCount}
+              streakCount={streakCount}
               percent={percent}
               litSegments={litSegments}
               onShowAchievements={() => setCurrentView("achievements")}

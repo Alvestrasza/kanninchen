@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import {
   resetAllProgress,
   setActiveTask,
-  type TaskProgressState,
+  type ProgressUpdateResult,
   upsertTaskProgress,
 } from "@/lib/rabbit/progress";
 
@@ -23,11 +23,11 @@ async function requireUserId(): Promise<string> {
 export async function saveTaskProgressAction(
   taskId: string,
   subtasks: boolean[],
-): Promise<TaskProgressState> {
+): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
-  const progress = await upsertTaskProgress(userId, taskId, subtasks);
+  const result = await upsertTaskProgress(userId, taskId, subtasks);
   revalidatePath("/");
-  return progress;
+  return result;
 }
 
 export async function setActiveTaskAction(taskId: string): Promise<string> {
@@ -37,9 +37,9 @@ export async function setActiveTaskAction(taskId: string): Promise<string> {
   return activeTaskId;
 }
 
-export async function resetProgressAction(): Promise<TaskProgressState> {
+export async function resetProgressAction(): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
-  const progress = await resetAllProgress(userId);
+  const result = await resetAllProgress(userId);
   revalidatePath("/");
-  return progress;
+  return result;
 }
