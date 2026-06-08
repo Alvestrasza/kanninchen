@@ -163,10 +163,41 @@ button {
   padding: 1rem;
 }
 
+.task-sections {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.task-section {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.task-section-head {
+  padding: 0.45rem 0.25rem 0.25rem;
+  border-bottom: 1px solid rgba(0, 191, 255, 0.18);
+}
+
+.task-section-head span {
+  display: block;
+  color: var(--gold);
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.task-section-head small {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
 .task-list {
   display: grid;
   gap: 0.45rem;
-  margin-top: 0.8rem;
 }
 
 .task-item {
