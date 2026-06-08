@@ -111,9 +111,8 @@ export function TaskPanel({ activeTaskId, progress, onSelectTask }: TaskPanelPro
                         opacity: { duration: 0.18, delay: index * 0.025 },
                         x: { duration: 0.18, delay: index * 0.025 },
                         layout: {
-                          type: "spring",
-                          stiffness: 420,
-                          damping: 34,
+                          duration: 0.55,
+                          ease: "easeInOut",
                         },
                       }}
                       whileHover={{ x: 4 }}
