@@ -165,6 +165,7 @@ export function SecondaryView({
     .sort((left, right) => right.percent - left.percent)[0];
 
   const dailyPercent = Math.round((completedCount / Math.max(1, totalTasks)) * 100);
+  const remainingDailyTasks = Math.max(0, totalTasks - completedCount);
   const factIndex = new Date().getDate() % rabbitFacts.length;
   const rabbitFact = rabbitFacts[factIndex];
 
@@ -175,6 +176,13 @@ export function SecondaryView({
         ? "Alle Tagesaufgaben sind erledigt. Deine Kaninchen sind heute gut versorgt."
         : "Ein Teil ist schon geschafft. Bleib ruhig dran, Schritt für Schritt wird der Tag vollständig.";
 
+  const assignedRabbitCareText =
+  completedCount >= totalTasks
+    ? "Für deine zugeordneten Kaninchen ist heute alles erledigt."
+    : remainingDailyTasks === totalTasks
+      ? "Für deine zugeordneten Kaninchen ist heute noch nichts erledigt."
+      : `Für deine zugeordneten Kaninchen sind heute noch ${remainingDailyTasks} Aufgaben offen.`;
+  
   const [rabbitName, setRabbitName] = useState("");
   const [rabbitBreed, setRabbitBreed] = useState("");
   const [rabbitColor, setRabbitColor] = useState("");
@@ -354,14 +362,32 @@ export function SecondaryView({
             <div className="section-label">Meine Kaninchen</div>
 
             {myAssignedRabbits.length > 0 ? (
-              <div className="home-badge-row">
-                {myAssignedRabbits.map((rabbit) => (
-                  <div className="home-badge" key={rabbit.id} title={rabbit.name}>
-                    <span>🐰</span>
-                    <small>{rabbit.name}</small>
+              <>
+                <article className="achievement-mini-card">
+                  <span>🐰</span>
+
+                  <div>
+                    <strong>{assignedRabbitCareText}</strong>
+                    <small>
+                      Heute erledigt: {completedCount} / {totalTasks} Aufgaben
+                    </small>
                   </div>
-                ))}
-              </div>
+                </article>
+
+                <div className="home-assigned-rabbit-grid">
+                  {myAssignedRabbits.map((rabbit) => (
+                    <article className="home-assigned-rabbit-card" key={rabbit.id}>
+                      <span>🐇</span>
+
+                      <div>
+                        <strong>{rabbit.name}</strong>
+                        <small>{rabbit.breed ?? "Rasse nicht hinterlegt"}</small>
+                        <small>{rabbit.color ?? "Farbe nicht hinterlegt"}</small>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </>
             ) : (
               <article className="achievement-mini-card">
                 <span>🐇</span>

@@ -2288,3 +2288,41 @@ a {
   flex-wrap: wrap;
   gap: 0.4rem;
 }
+
+.home-assigned-rabbit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.home-assigned-rabbit-card {
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 191, 255, 0.18);
+  border-radius: 0.32rem;
+  background: rgba(1, 18, 30, 0.42);
+}
+
+.home-assigned-rabbit-card > span {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.08);
+}
+
+.home-assigned-rabbit-card strong {
+  display: block;
+  color: #e7fbff;
+}
+
+.home-assigned-rabbit-card small {
+  display: block;
+  color: var(--muted);
+}
