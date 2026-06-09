@@ -8,6 +8,7 @@ export type AppRole = "child" | "parent" | "admin" | "tester";
 
 type JwtPayload = {
   family_key?: string;
+  family_name?: string;
   realm_access?: {
     roles?: string[];
   };
@@ -65,6 +66,30 @@ function decodeJwtPayload(token?: string | null): JwtPayload | null {
   } catch {
     return null;
   }
+}
+
+function slugifyFamilyName(familyName?: string | null): string | null {
+  if (!familyName) {
+    return null;
+  }
+
+  const slug = familyName
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  if (!slug) {
+    return null;
+  }
+
+  return `familie-${slug}`;
 }
 
 function collectRawRoles(payload: JwtPayload | null, clientId?: string | null): string[] {
@@ -140,5 +165,11 @@ export function resolveFamilyKeyFromTokens({
   const idPayload = decodeJwtPayload(idToken);
   const accessPayload = decodeJwtPayload(accessToken);
 
-  return idPayload?.family_key ?? accessPayload?.family_key ?? null;
+  return (
+    idPayload?.family_key ??
+    accessPayload?.family_key ??
+    slugifyFamilyName(idPayload?.family_name) ??
+    slugifyFamilyName(accessPayload?.family_name) ??
+    null
+  );
 }
