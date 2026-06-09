@@ -58,15 +58,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const roles = resolveAppRolesFromTokens(tokenContext);
         const familyKey = resolveFamilyKeyFromTokens(tokenContext);
-        console.log("Kaninchen Auth Debug:", {
-          userId: user.id,
-          email: user.email,
-          roles,
-          familyKey,
-          hasAccessToken: Boolean(account?.access_token),
-          hasIdToken: Boolean(account?.id_token),
-          authKeycloakId: process.env.AUTH_KEYCLOAK_ID,
-        });
+        if (process.env.KANINCHEN_AUTH_DEBUG === "true") {
+          console.log("Kaninchen Auth Debug:", {
+            userId: user.id,
+            email: user.email,
+            roles,
+            familyKey,
+            hasAccessToken: Boolean(account?.access_token),
+            hasIdToken: Boolean(account?.id_token),
+            authKeycloakId: process.env.AUTH_KEYCLOAK_ID,
+          });
+        }
         session.user.id = user.id;
         session.user.roles = roles;
         session.user.familyKey = familyKey;
