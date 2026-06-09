@@ -4,6 +4,13 @@ import { RabbitQuestApp } from "@/components/rabbit/RabbitQuestApp";
 import { getActiveUserFamily } from "@/lib/rabbit/families";
 import { getUserProgress } from "@/lib/rabbit/progress";
 import { getParentDashboard } from "@/lib/rabbit/parent-dashboard";
+import {
+  getFamilyChildOptions,
+  getRabbitCaretakerAssignments,
+  type RabbitCaretakerAssignmentView,
+  type RabbitCaretakerChildOption,
+} from "@/lib/rabbit/caretaker-assignments";
+import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
 
 export default async function HomePage() {
   const session = await auth();
@@ -25,9 +32,17 @@ export default async function HomePage() {
   const canUseParentArea =
     session.user.roles?.includes("parent") || session.user.roles?.includes("admin");
 
-  const parentDashboard = canUseParentArea
-    ? await getParentDashboard(activeFamily.id, session.user.id)
-    : null;
+  let parentDashboard: ParentDashboardView | null = null;
+  let parentChildOptions: RabbitCaretakerChildOption[] = [];
+  let parentCaretakerAssignments: RabbitCaretakerAssignmentView[] = [];
+
+  if (canUseParentArea) {
+    [parentDashboard, parentChildOptions, parentCaretakerAssignments] = await Promise.all([
+      getParentDashboard(activeFamily.id, session.user.id),
+      getFamilyChildOptions(session.user.id, activeFamily.id),
+      getRabbitCaretakerAssignments(session.user.id, activeFamily.id),
+    ]);
+  }
 
   return (
     <RabbitQuestApp
@@ -41,6 +56,8 @@ export default async function HomePage() {
       initialAchievements={state.achievements}
       initialRabbits={state.rabbits}
       initialParentDashboard={parentDashboard}
+      initialParentChildOptions={parentChildOptions}
+      initialCaretakerAssignments={parentCaretakerAssignments}
     />
   );
 }

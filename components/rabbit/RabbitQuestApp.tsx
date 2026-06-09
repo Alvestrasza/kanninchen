@@ -2,6 +2,14 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { rabbitTasks } from "@/data/rabbit/tasks";
+import { topTabs, type RabbitView } from "@/components/rabbit/rabbit-navigation";
+import { TaskPanel } from "@/components/rabbit/TaskPanel";
+import { QuestPanel } from "@/components/rabbit/QuestPanel";
+import { SideStack } from "@/components/rabbit/SideStack";
+import { SecondaryView } from "@/components/rabbit/SecondaryView";
+import { UserStrip } from "@/components/rabbit/UserStrip";
+import { TopNavigation } from "@/components/rabbit/TopNavigation";
 import {
   createRabbitProfileAction,
   deleteRabbitProfileAction,
@@ -11,19 +19,6 @@ import {
   setActiveTaskAction,
   updateRabbitProfileAction,
 } from "@/app/actions";
-import { rabbitTasks } from "@/data/rabbit/tasks";
-import type { TaskProgressState } from "@/lib/rabbit/progress";
-import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
-import type { AppRole } from "@/lib/auth/roles";
-import type { RabbitFamilyView } from "@/lib/rabbit/families";
-import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
-import type {
-  RabbitProfileCreateInput,
-  RabbitProfileUpdateInput,
-  RabbitProfileView,
-} from "@/lib/rabbit/profiles";
-import { topTabs, type RabbitView } from "@/components/rabbit/rabbit-navigation";
-import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
   completedFromSubtasks,
   getCompletedCount,
@@ -31,11 +26,20 @@ import {
   getDailyTasks,
   normalizeTaskSubtasks,
 } from "@/components/rabbit/rabbit-progress-state";
-import { QuestPanel } from "@/components/rabbit/QuestPanel";
-import { SideStack } from "@/components/rabbit/SideStack";
-import { SecondaryView } from "@/components/rabbit/SecondaryView";
-import { UserStrip } from "@/components/rabbit/UserStrip";
-import { TopNavigation } from "@/components/rabbit/TopNavigation";
+import type { TaskProgressState } from "@/lib/rabbit/progress";
+import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
+import type { AppRole } from "@/lib/auth/roles";
+import type { RabbitFamilyView } from "@/lib/rabbit/families";
+import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
+import type {
+  RabbitCaretakerAssignmentView,
+  RabbitCaretakerChildOption,
+} from "@/lib/rabbit/caretaker-assignments";
+import type {
+  RabbitProfileCreateInput,
+  RabbitProfileUpdateInput,
+  RabbitProfileView,
+} from "@/lib/rabbit/profiles";
 
 type RabbitQuestAppProps = {
   userName: string;
@@ -48,6 +52,8 @@ type RabbitQuestAppProps = {
   initialAchievements: RabbitAchievementView[];
   initialRabbits: RabbitProfileView[];
   initialParentDashboard: ParentDashboardView | null;
+  initialParentChildOptions: RabbitCaretakerChildOption[];
+  initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
 };
 
 export function RabbitQuestApp({
@@ -61,6 +67,8 @@ export function RabbitQuestApp({
   initialAchievements,
   initialRabbits,
   initialParentDashboard,
+  initialParentChildOptions,
+  initialCaretakerAssignments,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const activeFamily = initialFamily;
@@ -379,7 +387,10 @@ const resetProgress = () => {
               totalXp={totalXp}
               achievements={achievements}
               rabbits={rabbits}
+              familyId={activeFamily.id}
               parentDashboard={initialParentDashboard}
+              parentChildOptions={initialParentChildOptions}
+              initialCaretakerAssignments={initialCaretakerAssignments}
               editingRabbit={editingRabbit}
               isRabbitModalOpen={isRabbitModalOpen}
               onCloseRabbitModal={closeRabbitModal}

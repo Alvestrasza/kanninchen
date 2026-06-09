@@ -6,13 +6,21 @@
 // Updated: 2026-06-09
 // Purpose: Secondary views for Kaninchen Quest, including dashboard, lexicon, rabbit profiles, achievements and settings.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 import { rabbitFacts } from "@/data/rabbit/facts";
+import {
+  assignRabbitCaretakerAction,
+  removeRabbitCaretakerAssignmentAction,
+} from "@/app/actions";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
+import type {
+  RabbitCaretakerAssignmentView,
+  RabbitCaretakerChildOption,
+} from "@/lib/rabbit/caretaker-assignments";
 import type {
   RabbitProfileCreateInput,
   RabbitProfileUpdateInput,
@@ -23,13 +31,16 @@ type SecondaryViewProps = {
   view: RabbitView;
   userName: string;
   familyName: string;
+  familyId: string;
   canUseParentArea: boolean;
+  parentDashboard: ParentDashboardView | null;
+  parentChildOptions: RabbitCaretakerChildOption[];
+  initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
   completedCount: number;
   totalTasks: number;
   totalXp: number;
   achievements: RabbitAchievementView[];
   rabbits: RabbitProfileView[];
-  parentDashboard: ParentDashboardView | null;
   editingRabbit: RabbitProfileView | null;
   isRabbitModalOpen: boolean;
   onCloseRabbitModal: () => void;
@@ -98,13 +109,16 @@ export function SecondaryView({
   view,
   userName,
   familyName,
+  familyId,
   canUseParentArea,
+  parentDashboard,
+  parentChildOptions,
+  initialCaretakerAssignments,
   completedCount,
   totalTasks,
   totalXp,
   achievements,
   rabbits,
-  parentDashboard,
   editingRabbit,
   isRabbitModalOpen,
   onCloseRabbitModal,
@@ -139,6 +153,70 @@ export function SecondaryView({
   const [rabbitColor, setRabbitColor] = useState("");
   const [rabbitBirthday, setRabbitBirthday] = useState("");
   const [rabbitNotes, setRabbitNotes] = useState("");
+  const [caretakerAssignments, setCaretakerAssignments] = useState(initialCaretakerAssignments);
+  const [selectedRabbitId, setSelectedRabbitId] = useState("");
+  const [selectedChildId, setSelectedChildId] = useState("");
+  const [isPrimaryCaretaker, setIsPrimaryCaretaker] = useState(true);
+  const [caretakerMessage, setCaretakerMessage] = useState("");
+  const [isCaretakerPending, startCaretakerTransition] = useTransition();
+
+  useEffect(() => {
+    if (!selectedRabbitId && parentDashboard?.rabbits[0]?.id) {
+      setSelectedRabbitId(parentDashboard.rabbits[0].id);
+    }
+  }, [parentDashboard, selectedRabbitId]);
+
+  useEffect(() => {
+    if (!selectedChildId && parentChildOptions[0]?.id) {
+      setSelectedChildId(parentChildOptions[0].id);
+    }
+  }, [parentChildOptions, selectedChildId]);
+
+  const caretakerAssignmentsByRabbitId = useMemo(() => {
+    const byRabbitId = new Map<string, RabbitCaretakerAssignmentView[]>();
+
+    for (const assignment of caretakerAssignments) {
+      const current = byRabbitId.get(assignment.rabbitId) ?? [];
+      current.push(assignment);
+      byRabbitId.set(assignment.rabbitId, current);
+    }
+
+    return byRabbitId;
+  }, [caretakerAssignments]);
+
+  const assignCaretaker = () => {
+    if (!selectedRabbitId || !selectedChildId) {
+      setCaretakerMessage("Bitte Kaninchen und Kind auswählen.");
+      return;
+    }
+
+    startCaretakerTransition(async () => {
+      try {
+        const nextAssignments = await assignRabbitCaretakerAction(familyId, {
+          rabbitId: selectedRabbitId,
+          userId: selectedChildId,
+          isPrimary: isPrimaryCaretaker,
+        });
+
+        setCaretakerAssignments(nextAssignments);
+        setCaretakerMessage("Zuordnung wurde gespeichert.");
+      } catch {
+        setCaretakerMessage("Zuordnung konnte nicht gespeichert werden.");
+      }
+    });
+  };
+
+  const removeCaretakerAssignment = (assignmentId: string) => {
+    startCaretakerTransition(async () => {
+      try {
+        const nextAssignments = await removeRabbitCaretakerAssignmentAction(familyId, assignmentId);
+        setCaretakerAssignments(nextAssignments);
+        setCaretakerMessage("Zuordnung wurde entfernt.");
+      } catch {
+        setCaretakerMessage("Zuordnung konnte nicht entfernt werden.");
+      }
+    });
+  };
 
   const isEditingRabbit = Boolean(editingRabbit);
   const canSaveRabbit = rabbitName.trim().length > 0;
@@ -724,23 +802,118 @@ export function SecondaryView({
               </section>
 
               <section className="parent-dashboard-card parent-dashboard-wide">
-                <h3>Kaninchenzustand</h3>
+                <h3>Kaninchenzustand & Zuständigkeit</h3>
 
                 {parentDashboard.rabbits.length > 0 ? (
-                  <div className="parent-rabbit-grid">
-                    {parentDashboard.rabbits.map((rabbit) => (
-                      <article className="parent-rabbit-card" key={rabbit.id}>
-                        <div className="rabbit-avatar">🐰</div>
+                  <>
+                    <div className="caretaker-assignment-form">
+                      <label>
+                        Kaninchen
+                        <select
+                          value={selectedRabbitId}
+                          onChange={(event) => setSelectedRabbitId(event.target.value)}
+                        >
+                          {parentDashboard.rabbits.map((rabbit) => (
+                            <option key={rabbit.id} value={rabbit.id}>
+                              {rabbit.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
 
-                        <div>
-                          <strong>{rabbit.name}</strong>
-                          <small>{rabbit.breed ?? "Rasse nicht hinterlegt"}</small>
-                          <small>{rabbit.color ?? "Farbe nicht hinterlegt"}</small>
-                          {rabbit.notes && <p>{rabbit.notes}</p>}
-                        </div>
-                      </article>
-                    ))}
-                  </div>
+                      <label>
+                        Kind
+                        <select
+                          value={selectedChildId}
+                          onChange={(event) => setSelectedChildId(event.target.value)}
+                        >
+                          {parentChildOptions.map((child) => (
+                            <option key={child.id} value={child.id}>
+                              {child.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="caretaker-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={isPrimaryCaretaker}
+                          onChange={(event) => setIsPrimaryCaretaker(event.target.checked)}
+                        />
+                        Hauptverantwortlich
+                      </label>
+
+                      <button
+                        className="ghost-button"
+                        type="button"
+                        onClick={assignCaretaker}
+                        disabled={
+                          isCaretakerPending ||
+                          parentDashboard.rabbits.length === 0 ||
+                          parentChildOptions.length === 0
+                        }
+                      >
+                        {isCaretakerPending ? "Speichern..." : "Zuordnung speichern"}
+                      </button>
+                    </div>
+
+                    {caretakerMessage && <p className="caretaker-message">{caretakerMessage}</p>}
+
+                    {parentChildOptions.length === 0 && (
+                      <div className="info-tile">
+                        <strong>👨‍👧</strong>
+                        <br />
+                        Es gibt noch kein Kind in dieser Familie.
+                      </div>
+                    )}
+
+                    <div className="parent-rabbit-grid">
+                      {parentDashboard.rabbits.map((rabbit) => {
+                        const assignments = caretakerAssignmentsByRabbitId.get(rabbit.id) ?? [];
+
+                        return (
+                          <article className="parent-rabbit-card" key={rabbit.id}>
+                            <div className="rabbit-avatar">🐰</div>
+
+                            <div>
+                              <strong>{rabbit.name}</strong>
+                              <small>{rabbit.breed ?? "Rasse nicht hinterlegt"}</small>
+                              <small>{rabbit.color ?? "Farbe nicht hinterlegt"}</small>
+
+                              {rabbit.notes && <p>{rabbit.notes}</p>}
+
+                              <div className="caretaker-list">
+                                <span>Zuständig:</span>
+
+                                {assignments.length > 0 ? (
+                                  assignments.map((assignment) => (
+                                    <div className="caretaker-chip" key={assignment.id}>
+                                      <strong>
+                                        {assignment.userName}
+                                        {assignment.isPrimary ? " ⭐" : ""}
+                                      </strong>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => removeCaretakerAssignment(assignment.id)}
+                                        disabled={isCaretakerPending}
+                                        aria-label={`Zuordnung für ${assignment.userName} entfernen`}
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <small>Noch nicht zugewiesen</small>
+                                )}
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </>
                 ) : (
                   <div className="info-tile">
                     <strong>🐇</strong>

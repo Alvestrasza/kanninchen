@@ -21,7 +21,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  
+
   taskProgress  RabbitTaskProgress[]
   journalEntries RabbitJournalEntry[]
   rabbits       RabbitProfile[]
@@ -30,6 +30,7 @@ model User {
   xpEvents      RabbitXpEvent[]
   achievementUnlocks RabbitAchievementUnlock[]
   authenticators Authenticator[]
+  rabbitCaretakerAssignments RabbitCaretakerAssignment[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -132,6 +133,7 @@ model RabbitProfile {
 
   user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   family RabbitFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  caretakerAssignments RabbitCaretakerAssignment[]
 
   @@index([userId, name])
   @@index([familyId, name])
@@ -194,6 +196,7 @@ model RabbitFamily {
 
   memberships RabbitFamilyMembership[]
   rabbits     RabbitProfile[]
+  caretakerAssignments RabbitCaretakerAssignment[]
 
   @@index([name])
 }
@@ -212,4 +215,25 @@ model RabbitFamilyMembership {
   @@unique([familyId, userId])
   @@index([userId])
   @@index([familyId, role])
+}
+
+model RabbitCaretakerAssignment {
+  id        String   @id @default(cuid())
+  familyId  String
+  rabbitId  String
+  userId    String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  family RabbitFamily  @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  rabbit RabbitProfile @relation(fields: [rabbitId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, rabbitId, userId])
+  @@index([familyId])
+  @@index([familyId, userId])
+  @@index([familyId, rabbitId])
+  @@index([rabbitId])
+  @@index([userId])
 }
