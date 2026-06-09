@@ -1733,3 +1733,119 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+.user-strip-actions {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.rabbit-add-button {
+  border-color: rgba(255, 211, 93, 0.58);
+  color: var(--gold);
+}
+
+.rabbit-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 8, 16, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.rabbit-modal {
+  width: min(42rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid rgba(0, 191, 255, 0.42);
+  border-radius: 0.55rem;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 191, 255, 0.16), transparent 10rem),
+    linear-gradient(180deg, rgba(4, 34, 58, 0.98), rgba(1, 12, 22, 0.98));
+  box-shadow:
+    0 0 2rem rgba(0, 191, 255, 0.2),
+    inset 0 0 1.4rem rgba(0, 143, 255, 0.12);
+}
+
+.rabbit-modal-head {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.rabbit-modal-head h3 {
+  margin: 0.18rem 0 0;
+  color: #d6f4ff;
+}
+
+.modal-close-button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(0, 191, 255, 0.32);
+  border-radius: 50%;
+  background: rgba(1, 12, 22, 0.72);
+  color: var(--cyan);
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.rabbit-modal .rabbit-form-grid {
+  margin-top: 0.2rem;
+}
+
+.rabbit-modal label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.rabbit-modal input,
+.rabbit-modal textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  border-radius: 0.35rem;
+  background: rgba(1, 12, 22, 0.82);
+  color: #d6f4ff;
+  font: inherit;
+  padding: 0.7rem 0.75rem;
+  outline: none;
+}
+
+.rabbit-modal input:focus,
+.rabbit-modal textarea:focus {
+  border-color: rgba(255, 211, 93, 0.65);
+  box-shadow: 0 0 0.75rem rgba(255, 211, 93, 0.14);
+}
+
+.rabbit-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 0.4rem;
+}
+
+@media (max-width: 760px) {
+  .user-strip-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .user-strip-actions form,
+  .user-strip-actions button {
+    flex: 1;
+  }
+}

@@ -7,7 +7,7 @@
 // Purpose: Secondary views for Kaninchen Quest, including dashboard, lexicon, rabbit profiles, achievements and settings.
 
 import { useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { rabbitFacts } from "@/data/rabbit/facts";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
@@ -22,6 +22,8 @@ type SecondaryViewProps = {
   totalXp: number;
   achievements: RabbitAchievementView[];
   rabbits: RabbitProfileView[];
+  isRabbitModalOpen: boolean;
+  onCloseRabbitModal: () => void;
   onCreateRabbit: (input: RabbitProfileCreateInput) => void;
   onReset: () => void;
   onResetAll: () => void;
@@ -80,6 +82,8 @@ export function SecondaryView({
   totalXp,
   achievements,
   rabbits,
+  isRabbitModalOpen,
+  onCloseRabbitModal,
   onCreateRabbit,
   onReset,
   onResetAll,
@@ -124,6 +128,15 @@ export function SecondaryView({
       notes: rabbitNotes,
     });
 
+    setRabbitName("");
+    setRabbitBreed("");
+    setRabbitColor("");
+    setRabbitBirthday("");
+    setRabbitNotes("");
+  };
+
+  const closeRabbitModal = () => {
+    onCloseRabbitModal();
     setRabbitName("");
     setRabbitBreed("");
     setRabbitColor("");
@@ -261,73 +274,9 @@ export function SecondaryView({
         <h2>Kaninchen</h2>
 
         <p>
-          Hier findest du die Kaninchen, die betreut werden. Du kannst einfache Profile
-          anlegen und später um Gesundheitsdaten, Charakter und Pflegehinweise erweitern.
+          Hier findest du die Kaninchen, die betreut werden. Über den Button
+          oben rechts kannst du ein neues Kaninchenprofil hinzufügen.
         </p>
-
-        <section className="rabbit-form-card">
-          <div className="section-label">Kaninchen hinzufügen</div>
-
-          <div className="rabbit-form-grid">
-            <label>
-              Name *
-              <input
-                type="text"
-                value={rabbitName}
-                onChange={(event) => setRabbitName(event.target.value)}
-                placeholder="z. B. Luna"
-              />
-            </label>
-
-            <label>
-              Rasse
-              <input
-                type="text"
-                value={rabbitBreed}
-                onChange={(event) => setRabbitBreed(event.target.value)}
-                placeholder="z. B. Zwergwidder"
-              />
-            </label>
-
-            <label>
-              Farbe
-              <input
-                type="text"
-                value={rabbitColor}
-                onChange={(event) => setRabbitColor(event.target.value)}
-                placeholder="z. B. weiß-braun"
-              />
-            </label>
-
-            <label>
-              Geburtstag
-              <input
-                type="date"
-                value={rabbitBirthday}
-                onChange={(event) => setRabbitBirthday(event.target.value)}
-              />
-            </label>
-          </div>
-
-          <label className="rabbit-notes-field">
-            Notizen
-            <textarea
-              value={rabbitNotes}
-              onChange={(event) => setRabbitNotes(event.target.value)}
-              placeholder="Besondere Hinweise, Charakter, Verhalten oder Pflegehinweise..."
-              rows={4}
-            />
-          </label>
-
-          <button
-            className="primary-action-button"
-            type="button"
-            onClick={submitRabbitProfile}
-            disabled={!canCreateRabbit}
-          >
-            Kaninchenprofil speichern
-          </button>
-        </section>
 
         {rabbits.length > 0 ? (
           <div className="rabbit-profile-grid">
@@ -375,11 +324,109 @@ export function SecondaryView({
             <h3>Noch keine Kaninchenprofile</h3>
 
             <p>
-              Sobald ein Kaninchenprofil angelegt wurde, erscheint es hier mit Name,
-              Rasse, Farbe, Geburtstag und besonderen Hinweisen.
+              Über „+ Kaninchen“ kannst du das erste Profil anlegen.
+              Danach erscheint es hier als Karte.
             </p>
           </div>
         )}
+
+        <AnimatePresence>
+          {isRabbitModalOpen && (
+            <motion.div
+              className="rabbit-modal-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeRabbitModal}
+            >
+              <motion.section
+                className="rabbit-modal"
+                initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.96 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="rabbit-modal-head">
+                  <div>
+                    <span className="section-label">Kaninchen hinzufügen</span>
+                    <h3>Neues Kaninchenprofil</h3>
+                  </div>
+
+                  <button className="modal-close-button" type="button" onClick={closeRabbitModal}>
+                    ×
+                  </button>
+                </div>
+
+                <div className="rabbit-form-grid">
+                  <label>
+                    Name *
+                    <input
+                      type="text"
+                      value={rabbitName}
+                      onChange={(event) => setRabbitName(event.target.value)}
+                      placeholder="z. B. Luna"
+                    />
+                  </label>
+
+                  <label>
+                    Rasse
+                    <input
+                      type="text"
+                      value={rabbitBreed}
+                      onChange={(event) => setRabbitBreed(event.target.value)}
+                      placeholder="z. B. Zwergwidder"
+                    />
+                  </label>
+
+                  <label>
+                    Farbe
+                    <input
+                      type="text"
+                      value={rabbitColor}
+                      onChange={(event) => setRabbitColor(event.target.value)}
+                      placeholder="z. B. weiß-braun"
+                    />
+                  </label>
+
+                  <label>
+                    Geburtstag
+                    <input
+                      type="date"
+                      value={rabbitBirthday}
+                      onChange={(event) => setRabbitBirthday(event.target.value)}
+                    />
+                  </label>
+                </div>
+
+                <label className="rabbit-notes-field">
+                  Notizen
+                  <textarea
+                    value={rabbitNotes}
+                    onChange={(event) => setRabbitNotes(event.target.value)}
+                    placeholder="Besondere Hinweise, Charakter, Verhalten oder Pflegehinweise..."
+                    rows={4}
+                  />
+                </label>
+
+                <div className="rabbit-modal-actions">
+                  <button className="ghost-button" type="button" onClick={closeRabbitModal}>
+                    Abbrechen
+                  </button>
+
+                  <button
+                    className="primary-action-button"
+                    type="button"
+                    onClick={submitRabbitProfile}
+                    disabled={!canCreateRabbit}
+                  >
+                    Profil speichern
+                  </button>
+                </div>
+              </motion.section>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </>
     );
   }

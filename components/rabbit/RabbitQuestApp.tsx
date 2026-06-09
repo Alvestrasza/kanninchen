@@ -54,6 +54,7 @@ export function RabbitQuestApp({
   const [totalXp, setTotalXp] = useState(initialTotalXp);
   const [achievements, setAchievements] = useState(initialAchievements);
   const [rabbits, setRabbits] = useState(initialRabbits);
+  const [isRabbitModalOpen, setIsRabbitModalOpen] = useState(false);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("home");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
@@ -194,6 +195,7 @@ const resetProgress = () => {
         const nextRabbits = await createRabbitProfileAction(input);
 
         setRabbits(nextRabbits);
+        setIsRabbitModalOpen(false);
         setMessage(`Kaninchenprofil „${input.name.trim()}“ wurde angelegt.`);
       } catch {
         setMessage("Kaninchenprofil konnte nicht angelegt werden. Bitte prüfe die Eingaben.");
@@ -211,7 +213,13 @@ const resetProgress = () => {
 
         <TopNavigation view={view} onChangeView={setCurrentView} />
 
-        <UserStrip userName={userName} isPending={isPending} message={message} />
+        <UserStrip
+          userName={userName}
+          isPending={isPending}
+          message={message}
+          showRabbitAddButton={view === "rabbits"}
+          onAddRabbit={() => setIsRabbitModalOpen(true)}
+        />
 
         <AnimatePresence>
           {recentUnlocks.map((achievement) => (
@@ -279,6 +287,8 @@ const resetProgress = () => {
             totalXp={totalXp}
             achievements={achievements}
             rabbits={rabbits}
+            isRabbitModalOpen={isRabbitModalOpen}
+            onCloseRabbitModal={() => setIsRabbitModalOpen(false)}
             onCreateRabbit={createRabbitProfile}
             onReset={resetProgress}
             onResetAll={resetAllRabbitData}

@@ -6,9 +6,17 @@ type UserStripProps = {
   userName: string;
   isPending: boolean;
   message: string;
+  showRabbitAddButton?: boolean;
+  onAddRabbit?: () => void;
 };
 
-export function UserStrip({ userName, isPending, message }: UserStripProps) {
+export function UserStrip({
+  userName,
+  isPending,
+  message,
+  showRabbitAddButton = false,
+  onAddRabbit,
+}: UserStripProps) {
   return (
     <div className="user-strip panel">
       <div>
@@ -20,11 +28,19 @@ export function UserStrip({ userName, isPending, message }: UserStripProps) {
         {isPending ? "Synchronisiere…" : message}
       </span>
 
-      <form action={logoutAction}>
-        <button className="ghost-button" type="submit">
-          Abmelden
-        </button>
-      </form>
+      <div className="user-strip-actions">
+        {showRabbitAddButton && (
+          <button className="ghost-button rabbit-add-button" type="button" onClick={onAddRabbit}>
+            + Kaninchen
+          </button>
+        )}
+
+        <form action={logoutAction}>
+          <button className="ghost-button" type="submit">
+            Abmelden
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
