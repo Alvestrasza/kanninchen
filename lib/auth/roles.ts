@@ -76,18 +76,29 @@ function collectRawRoles(payload: JwtPayload | null, clientId?: string | null): 
   const directRoles = payload.roles ?? [];
   const groups = payload.groups ?? [];
 
-  const clientRoles = clientId
+  const configuredClientRoles = clientId
     ? payload.resource_access?.[clientId]?.roles ?? []
     : [];
 
-  return [...realmRoles, ...clientRoles, ...directRoles, ...groups];
+  const allClientRoles = Object.values(payload.resource_access ?? {}).flatMap(
+    (clientAccess) => clientAccess.roles ?? [],
+  );
+
+  return [
+    ...realmRoles,
+    ...configuredClientRoles,
+    ...allClientRoles,
+    ...directRoles,
+    ...groups,
+  ];
 }
 
 function normalizeRole(rawRole: string): AppRole | null {
   const normalized = rawRole
     .trim()
     .toLowerCase()
-    .replace(/^\//, "");
+    .replace(/^\//, "")
+    .replace(/^.*\//, "");
 
   return ROLE_ALIASES[normalized] ?? null;
 }
