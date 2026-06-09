@@ -43,11 +43,13 @@ export default async function HomePage() {
     activeFamily.id,
   );
 
-  [parentDashboard, parentChildOptions, familyMembers] = await Promise.all([
-    getParentDashboard(activeFamily.id, session.user.id),
-    getFamilyChildOptions(session.user.id, activeFamily.id),
-    getFamilyMemberOverview(session.user.id, activeFamily.id),
-  ]);
+  if (canUseParentArea) {
+    [parentDashboard, parentChildOptions, familyMembers] = await Promise.all([
+      getParentDashboard(activeFamily.id, session.user.id),
+      getFamilyChildOptions(session.user.id, activeFamily.id),
+      getFamilyMemberOverview(session.user.id, activeFamily.id),
+    ]);
+  }
 
   return (
     <RabbitQuestApp
