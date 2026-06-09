@@ -14,6 +14,27 @@ type TopNavigationProps = {
   onChangeView: (view: RabbitView) => void;
 };
 
+function getTabGlyph(view: RabbitView): string {
+  switch (view) {
+    case "home":
+      return "◈";
+    case "quests":
+      return "✦";
+    case "journal":
+      return "▤";
+    case "rabbits":
+      return "◌";
+    case "achievements":
+      return "✧";
+    case "lexicon":
+      return "☷";
+    case "settings":
+      return "⚙";
+    default:
+      return "•";
+  }
+}
+
 export function TopNavigation({
   view,
   visibleTabs = topTabs,
@@ -27,40 +48,61 @@ export function TopNavigation({
   const previousTab = visibleTabs[(currentIndex - 1 + visibleTabs.length) % visibleTabs.length];
   const nextTab = visibleTabs[(currentIndex + 1) % visibleTabs.length];
 
-  return (
-    <header className="topbar" aria-label="Hauptnavigation">
-      <button
-        className="shoulder"
-        aria-label={`Vorheriger Bereich: ${previousTab.label}`}
-        title={`Vorheriger Bereich: ${previousTab.label}`}
-        type="button"
-        onClick={() => onChangeView(previousTab.view)}
-      >
-        L
-      </button>
+return (
+  <header className="topbar ancient-pad-topbar" aria-label="Hauptnavigation">
+    <button
+      className="shoulder ancient-shoulder ancient-shoulder-left"
+      aria-label={`Vorheriger Bereich: ${previousTab.label}`}
+      title={`Vorheriger Bereich: ${previousTab.label}`}
+      type="button"
+      onClick={() => onChangeView(previousTab.view)}
+    >
+      <span aria-hidden="true">‹</span>
+    </button>
 
-      <nav className="tabs" id="topTabs">
+    <div className="ancient-nav-shell">
+      <div className="ancient-nav-ornament ancient-nav-ornament-left" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <nav className="tabs ancient-tabs" id="topTabs">
         {visibleTabs.map((tab) => (
           <button
             key={tab.view}
-            className={`tab ${view === tab.view ? "active" : ""}`}
+            className={`tab ancient-tab ${view === tab.view ? "active" : ""}`}
             type="button"
             onClick={() => onChangeView(tab.view)}
           >
-            {tab.label}
+            <span className="ancient-tab-glyph" aria-hidden="true">
+              {getTabGlyph(tab.view)}
+            </span>
+            <span className="ancient-tab-label">{tab.label}</span>
           </button>
         ))}
       </nav>
 
-      <button
-        className="shoulder"
-        aria-label={`Nächster Bereich: ${nextTab.label}`}
-        title={`Nächster Bereich: ${nextTab.label}`}
-        type="button"
-        onClick={() => onChangeView(nextTab.view)}
-      >
-        R
-      </button>
-    </header>
-  );
+      <div className="ancient-nav-core" aria-hidden="true">
+        <span />
+      </div>
+
+      <div className="ancient-nav-ornament ancient-nav-ornament-right" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+    </div>
+
+    <button
+      className="shoulder ancient-shoulder ancient-shoulder-right"
+      aria-label={`Nächster Bereich: ${nextTab.label}`}
+      title={`Nächster Bereich: ${nextTab.label}`}
+      type="button"
+      onClick={() => onChangeView(nextTab.view)}
+    >
+      <span aria-hidden="true">›</span>
+    </button>
+  </header>
+);
 }
