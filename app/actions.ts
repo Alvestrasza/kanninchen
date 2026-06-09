@@ -10,6 +10,11 @@ import {
   type ProgressUpdateResult,
   upsertTaskProgress,
 } from "@/lib/rabbit/progress";
+import {
+  createUserRabbitProfile,
+  type RabbitProfileCreateInput,
+  type RabbitProfileView,
+} from "@/lib/rabbit/profiles";
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
@@ -50,4 +55,13 @@ export async function resetAllRabbitDataAction(): Promise<ProgressUpdateResult> 
   const result = await resetAllUserRabbitData(userId);
   revalidatePath("/");
   return result;
+}
+
+export async function createRabbitProfileAction(
+  input: RabbitProfileCreateInput,
+): Promise<RabbitProfileView[]> {
+  const userId = await requireUserId();
+  const rabbits = await createUserRabbitProfile(userId, input);
+  revalidatePath("/");
+  return rabbits;
 }

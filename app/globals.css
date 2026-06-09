@@ -1655,3 +1655,81 @@ a {
   margin: 0;
   color: var(--muted);
 }
+
+.rabbit-form-card {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(0, 191, 255, 0.32);
+  border-radius: 0.45rem;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(0, 191, 255, 0.14), transparent 9rem),
+    rgba(3, 26, 42, 0.72);
+  box-shadow: inset 0 0 1.2rem rgba(0, 143, 255, 0.12);
+}
+
+.rabbit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.rabbit-form-card label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--cyan);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.rabbit-form-card input,
+.rabbit-form-card textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  border-radius: 0.35rem;
+  background: rgba(1, 12, 22, 0.82);
+  color: #d6f4ff;
+  font: inherit;
+  padding: 0.7rem 0.75rem;
+  outline: none;
+}
+
+.rabbit-form-card input:focus,
+.rabbit-form-card textarea:focus {
+  border-color: rgba(255, 211, 93, 0.65);
+  box-shadow: 0 0 0.75rem rgba(255, 211, 93, 0.14);
+}
+
+.rabbit-form-card input::placeholder,
+.rabbit-form-card textarea::placeholder {
+  color: rgba(185, 234, 255, 0.45);
+}
+
+.rabbit-notes-field {
+  grid-column: 1 / -1;
+}
+
+.primary-action-button {
+  justify-self: start;
+  border: 1px solid rgba(255, 211, 93, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 211, 93, 0.24), rgba(255, 211, 93, 0.08));
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0.7rem 1rem;
+  text-transform: uppercase;
+}
+
+.primary-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 760px) {
+  .rabbit-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

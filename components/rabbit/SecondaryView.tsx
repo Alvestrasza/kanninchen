@@ -6,12 +6,13 @@
 // Updated: 2026-06-09
 // Purpose: Secondary views for Kaninchen Quest, including dashboard, lexicon, rabbit profiles, achievements and settings.
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { rabbitFacts } from "@/data/rabbit/facts";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
-import type { RabbitProfileView } from "@/lib/rabbit/profiles";
+import type { RabbitProfileCreateInput, RabbitProfileView } from "@/lib/rabbit/profiles";
 
 type SecondaryViewProps = {
   view: RabbitView;
@@ -21,6 +22,7 @@ type SecondaryViewProps = {
   totalXp: number;
   achievements: RabbitAchievementView[];
   rabbits: RabbitProfileView[];
+  onCreateRabbit: (input: RabbitProfileCreateInput) => void;
   onReset: () => void;
   onResetAll: () => void;
 };
@@ -78,6 +80,7 @@ export function SecondaryView({
   totalXp,
   achievements,
   rabbits,
+  onCreateRabbit,
   onReset,
   onResetAll,
 }: SecondaryViewProps) {
@@ -99,6 +102,34 @@ export function SecondaryView({
       : completedCount >= totalTasks
         ? "Alle Tagesaufgaben sind erledigt. Deine Kaninchen sind heute gut versorgt."
         : "Ein Teil ist schon geschafft. Bleib ruhig dran, Schritt für Schritt wird der Tag vollständig.";
+
+  const [rabbitName, setRabbitName] = useState("");
+  const [rabbitBreed, setRabbitBreed] = useState("");
+  const [rabbitColor, setRabbitColor] = useState("");
+  const [rabbitBirthday, setRabbitBirthday] = useState("");
+  const [rabbitNotes, setRabbitNotes] = useState("");
+
+  const canCreateRabbit = rabbitName.trim().length > 0;
+
+  const submitRabbitProfile = () => {
+    if (!canCreateRabbit) {
+      return;
+    }
+
+    onCreateRabbit({
+      name: rabbitName,
+      breed: rabbitBreed,
+      color: rabbitColor,
+      birthday: rabbitBirthday,
+      notes: rabbitNotes,
+    });
+
+    setRabbitName("");
+    setRabbitBreed("");
+    setRabbitColor("");
+    setRabbitBirthday("");
+    setRabbitNotes("");
+  };
 
   if (view === "home") {
     return (
@@ -230,9 +261,73 @@ export function SecondaryView({
         <h2>Kaninchen</h2>
 
         <p>
-          Hier findest du die Kaninchen, die betreut werden. Später können hier auch
-          Gesundheitsdaten, Charakter und besondere Hinweise gepflegt werden.
+          Hier findest du die Kaninchen, die betreut werden. Du kannst einfache Profile
+          anlegen und später um Gesundheitsdaten, Charakter und Pflegehinweise erweitern.
         </p>
+
+        <section className="rabbit-form-card">
+          <div className="section-label">Kaninchen hinzufügen</div>
+
+          <div className="rabbit-form-grid">
+            <label>
+              Name *
+              <input
+                type="text"
+                value={rabbitName}
+                onChange={(event) => setRabbitName(event.target.value)}
+                placeholder="z. B. Luna"
+              />
+            </label>
+
+            <label>
+              Rasse
+              <input
+                type="text"
+                value={rabbitBreed}
+                onChange={(event) => setRabbitBreed(event.target.value)}
+                placeholder="z. B. Zwergwidder"
+              />
+            </label>
+
+            <label>
+              Farbe
+              <input
+                type="text"
+                value={rabbitColor}
+                onChange={(event) => setRabbitColor(event.target.value)}
+                placeholder="z. B. weiß-braun"
+              />
+            </label>
+
+            <label>
+              Geburtstag
+              <input
+                type="date"
+                value={rabbitBirthday}
+                onChange={(event) => setRabbitBirthday(event.target.value)}
+              />
+            </label>
+          </div>
+
+          <label className="rabbit-notes-field">
+            Notizen
+            <textarea
+              value={rabbitNotes}
+              onChange={(event) => setRabbitNotes(event.target.value)}
+              placeholder="Besondere Hinweise, Charakter, Verhalten oder Pflegehinweise..."
+              rows={4}
+            />
+          </label>
+
+          <button
+            className="primary-action-button"
+            type="button"
+            onClick={submitRabbitProfile}
+            disabled={!canCreateRabbit}
+          >
+            Kaninchenprofil speichern
+          </button>
+        </section>
 
         {rabbits.length > 0 ? (
           <div className="rabbit-profile-grid">

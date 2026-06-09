@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState, useTransition } from "react";
 import {
+  createRabbitProfileAction,
   resetAllRabbitDataAction,
   resetProgressAction,
   saveTaskProgressAction,
@@ -11,7 +12,7 @@ import {
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
-import type { RabbitProfileView } from "@/lib/rabbit/profiles";
+import type { RabbitProfileCreateInput, RabbitProfileView } from "@/lib/rabbit/profiles";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
@@ -187,6 +188,19 @@ const resetProgress = () => {
     });
   };
 
+  const createRabbitProfile = (input: RabbitProfileCreateInput) => {
+    startTransition(async () => {
+      try {
+        const nextRabbits = await createRabbitProfileAction(input);
+
+        setRabbits(nextRabbits);
+        setMessage(`Kaninchenprofil „${input.name.trim()}“ wurde angelegt.`);
+      } catch {
+        setMessage("Kaninchenprofil konnte nicht angelegt werden. Bitte prüfe die Eingaben.");
+      }
+    });
+  };
+
   const setCurrentView = (nextView: RabbitView) => {
     setView(nextView);
   };
@@ -265,6 +279,7 @@ const resetProgress = () => {
             totalXp={totalXp}
             achievements={achievements}
             rabbits={rabbits}
+            onCreateRabbit={createRabbitProfile}
             onReset={resetProgress}
             onResetAll={resetAllRabbitData}
           />
