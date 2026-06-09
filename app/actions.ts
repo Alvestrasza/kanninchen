@@ -12,8 +12,11 @@ import {
 } from "@/lib/rabbit/progress";
 import {
   createUserRabbitProfile,
+  deleteUserRabbitProfile,
   type RabbitProfileCreateInput,
+  type RabbitProfileUpdateInput,
   type RabbitProfileView,
+  updateUserRabbitProfile,
 } from "@/lib/rabbit/profiles";
 
 async function requireUserId(): Promise<string> {
@@ -62,6 +65,22 @@ export async function createRabbitProfileAction(
 ): Promise<RabbitProfileView[]> {
   const userId = await requireUserId();
   const rabbits = await createUserRabbitProfile(userId, input);
+  revalidatePath("/");
+  return rabbits;
+}
+
+export async function updateRabbitProfileAction(
+  input: RabbitProfileUpdateInput,
+): Promise<RabbitProfileView[]> {
+  const userId = await requireUserId();
+  const rabbits = await updateUserRabbitProfile(userId, input);
+  revalidatePath("/");
+  return rabbits;
+}
+
+export async function deleteRabbitProfileAction(rabbitId: string): Promise<RabbitProfileView[]> {
+  const userId = await requireUserId();
+  const rabbits = await deleteUserRabbitProfile(userId, rabbitId);
   revalidatePath("/");
   return rabbits;
 }

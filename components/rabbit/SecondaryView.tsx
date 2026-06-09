@@ -6,13 +6,17 @@
 // Updated: 2026-06-09
 // Purpose: Secondary views for Kaninchen Quest, including dashboard, lexicon, rabbit profiles, achievements and settings.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { rabbitFacts } from "@/data/rabbit/facts";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
-import type { RabbitProfileCreateInput, RabbitProfileView } from "@/lib/rabbit/profiles";
+import type {
+  RabbitProfileCreateInput,
+  RabbitProfileUpdateInput,
+  RabbitProfileView,
+} from "@/lib/rabbit/profiles";
 
 type SecondaryViewProps = {
   view: RabbitView;
@@ -22,9 +26,13 @@ type SecondaryViewProps = {
   totalXp: number;
   achievements: RabbitAchievementView[];
   rabbits: RabbitProfileView[];
+  editingRabbit: RabbitProfileView | null;
   isRabbitModalOpen: boolean;
   onCloseRabbitModal: () => void;
   onCreateRabbit: (input: RabbitProfileCreateInput) => void;
+  onUpdateRabbit: (input: RabbitProfileUpdateInput) => void;
+  onEditRabbit: (rabbit: RabbitProfileView) => void;
+  onDeleteRabbit: (rabbit: RabbitProfileView) => void;
   onReset: () => void;
   onResetAll: () => void;
 };
@@ -74,6 +82,14 @@ function formatRabbitBirthday(birthday: string | null): string {
   }).format(new Date(birthday));
 }
 
+function formatBirthdayForInput(birthday: string | null): string {
+  if (!birthday) {
+    return "";
+  }
+
+  return birthday.slice(0, 10);
+}
+
 export function SecondaryView({
   view,
   userName,
@@ -82,9 +98,13 @@ export function SecondaryView({
   totalXp,
   achievements,
   rabbits,
+  editingRabbit,
   isRabbitModalOpen,
   onCloseRabbitModal,
   onCreateRabbit,
+  onUpdateRabbit,
+  onEditRabbit,
+  onDeleteRabbit,
   onReset,
   onResetAll,
 }: SecondaryViewProps) {
@@ -113,26 +133,52 @@ export function SecondaryView({
   const [rabbitBirthday, setRabbitBirthday] = useState("");
   const [rabbitNotes, setRabbitNotes] = useState("");
 
-  const canCreateRabbit = rabbitName.trim().length > 0;
+  const isEditingRabbit = Boolean(editingRabbit);
+  const canSaveRabbit = rabbitName.trim().length > 0;
 
-  const submitRabbitProfile = () => {
-    if (!canCreateRabbit) {
+  useEffect(() => {
+    if (!isRabbitModalOpen) {
       return;
     }
 
-    onCreateRabbit({
+    if (!editingRabbit) {
+      setRabbitName("");
+      setRabbitBreed("");
+      setRabbitColor("");
+      setRabbitBirthday("");
+      setRabbitNotes("");
+      return;
+    }
+
+    setRabbitName(editingRabbit.name);
+    setRabbitBreed(editingRabbit.breed ?? "");
+    setRabbitColor(editingRabbit.color ?? "");
+    setRabbitBirthday(formatBirthdayForInput(editingRabbit.birthday));
+    setRabbitNotes(editingRabbit.notes ?? "");
+  }, [editingRabbit, isRabbitModalOpen]);
+
+  const submitRabbitProfile = () => {
+    if (!canSaveRabbit) {
+      return;
+    }
+
+    const input = {
       name: rabbitName,
       breed: rabbitBreed,
       color: rabbitColor,
       birthday: rabbitBirthday,
       notes: rabbitNotes,
-    });
+    };
 
-    setRabbitName("");
-    setRabbitBreed("");
-    setRabbitColor("");
-    setRabbitBirthday("");
-    setRabbitNotes("");
+    if (editingRabbit) {
+      onUpdateRabbit({
+        id: editingRabbit.id,
+        ...input,
+      });
+      return;
+    }
+
+    onCreateRabbit(input);
   };
 
   const closeRabbitModal = () => {
@@ -287,14 +333,28 @@ export function SecondaryView({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="rabbit-profile-head">
-                  <div className="rabbit-avatar">🐰</div>
+              <div className="rabbit-profile-head">
+                <div className="rabbit-avatar">🐰</div>
 
-                  <div>
-                    <span className="home-kicker">Kaninchenprofil</span>
-                    <h3>{rabbit.name}</h3>
-                  </div>
+                <div>
+                  <span className="home-kicker">Kaninchenprofil</span>
+                  <h3>{rabbit.name}</h3>
                 </div>
+
+                <div className="rabbit-card-actions">
+                  <button className="ghost-button tiny" type="button" onClick={() => onEditRabbit(rabbit)}>
+                    Bearbeiten
+                  </button>
+
+                  <button
+                    className="ghost-button tiny danger-text"
+                    type="button"
+                    onClick={() => onDeleteRabbit(rabbit)}
+                  >
+                    Löschen
+                  </button>
+                </div>
+              </div>
 
                 <dl className="rabbit-profile-facts">
                   <div>
@@ -350,7 +410,7 @@ export function SecondaryView({
                 <div className="rabbit-modal-head">
                   <div>
                     <span className="section-label">Kaninchen hinzufügen</span>
-                    <h3>Neues Kaninchenprofil</h3>
+                    <h3>{isEditingRabbit ? "Kaninchenprofil bearbeiten" : "Neues Kaninchenprofil"}</h3>
                   </div>
 
                   <button className="modal-close-button" type="button" onClick={closeRabbitModal}>
@@ -418,9 +478,9 @@ export function SecondaryView({
                     className="primary-action-button"
                     type="button"
                     onClick={submitRabbitProfile}
-                    disabled={!canCreateRabbit}
+                    disabled={!canSaveRabbit}
                   >
-                    Profil speichern
+                    {isEditingRabbit ? "Änderungen speichern" : "Profil speichern"}
                   </button>
                 </div>
               </motion.section>

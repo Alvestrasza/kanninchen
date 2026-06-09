@@ -1849,3 +1849,40 @@ a {
     flex: 1;
   }
 }
+
+.rabbit-profile-head {
+  grid-template-columns: 3.6rem 1fr auto;
+}
+
+.rabbit-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.ghost-button.tiny {
+  padding: 0.38rem 0.55rem;
+  font-size: 0.68rem;
+}
+
+.danger-text {
+  border-color: rgba(255, 105, 93, 0.45);
+  color: #ffaaa3;
+}
+
+.danger-text:hover {
+  border-color: rgba(255, 105, 93, 0.85);
+  color: #ffd8d4;
+}
+
+@media (max-width: 760px) {
+  .rabbit-profile-head {
+    grid-template-columns: 3.6rem 1fr;
+  }
+
+  .rabbit-card-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}

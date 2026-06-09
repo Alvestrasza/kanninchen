@@ -23,6 +23,10 @@ export type RabbitProfileCreateInput = {
   birthday?: string;
 };
 
+export type RabbitProfileUpdateInput = RabbitProfileCreateInput & {
+  id: string;
+};
+
 export async function getUserRabbitProfiles(userId: string): Promise<RabbitProfileView[]> {
   const profiles = await prisma.rabbitProfile.findMany({
     where: {
@@ -51,6 +55,10 @@ export async function getUserRabbitProfiles(userId: string): Promise<RabbitProfi
   }));
 }
 
+function parseOptionalBirthday(birthday?: string): Date | null {
+  return birthday ? new Date(`${birthday}T00:00:00.000Z`) : null;
+}
+
 export async function createUserRabbitProfile(
   userId: string,
   input: RabbitProfileCreateInput,
@@ -64,7 +72,7 @@ export async function createUserRabbitProfile(
   const breed = input.breed?.trim() || null;
   const color = input.color?.trim() || null;
   const notes = input.notes?.trim() || null;
-  const birthday = input.birthday ? new Date(`${input.birthday}T00:00:00.000Z`) : null;
+  const birthday = parseOptionalBirthday(input.birthday);
 
   await prisma.rabbitProfile.create({
     data: {
@@ -74,6 +82,52 @@ export async function createUserRabbitProfile(
       color,
       notes,
       birthday,
+    },
+  });
+
+  return getUserRabbitProfiles(userId);
+}
+
+export async function updateUserRabbitProfile(
+  userId: string,
+  input: RabbitProfileUpdateInput,
+): Promise<RabbitProfileView[]> {
+  const name = input.name.trim();
+
+  if (!name) {
+    throw new Error("Rabbit profile name is required.");
+  }
+
+  const breed = input.breed?.trim() || null;
+  const color = input.color?.trim() || null;
+  const notes = input.notes?.trim() || null;
+  const birthday = parseOptionalBirthday(input.birthday);
+
+  await prisma.rabbitProfile.update({
+    where: {
+      id: input.id,
+      userId,
+    },
+    data: {
+      name,
+      breed,
+      color,
+      notes,
+      birthday,
+    },
+  });
+
+  return getUserRabbitProfiles(userId);
+}
+
+export async function deleteUserRabbitProfile(
+  userId: string,
+  rabbitId: string,
+): Promise<RabbitProfileView[]> {
+  await prisma.rabbitProfile.delete({
+    where: {
+      id: rabbitId,
+      userId,
     },
   });
 

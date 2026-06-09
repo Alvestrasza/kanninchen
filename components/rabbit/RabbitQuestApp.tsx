@@ -4,15 +4,21 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState, useTransition } from "react";
 import {
   createRabbitProfileAction,
+  deleteRabbitProfileAction,
   resetAllRabbitDataAction,
   resetProgressAction,
   saveTaskProgressAction,
   setActiveTaskAction,
+  updateRabbitProfileAction,
 } from "@/app/actions";
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
-import type { RabbitProfileCreateInput, RabbitProfileView } from "@/lib/rabbit/profiles";
+import type {
+  RabbitProfileCreateInput,
+  RabbitProfileUpdateInput,
+  RabbitProfileView,
+} from "@/lib/rabbit/profiles";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
@@ -55,6 +61,7 @@ export function RabbitQuestApp({
   const [achievements, setAchievements] = useState(initialAchievements);
   const [rabbits, setRabbits] = useState(initialRabbits);
   const [isRabbitModalOpen, setIsRabbitModalOpen] = useState(false);
+  const [editingRabbit, setEditingRabbit] = useState<RabbitProfileView | null>(null);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("home");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
@@ -203,6 +210,57 @@ const resetProgress = () => {
     });
   };
 
+  const updateRabbitProfile = (input: RabbitProfileUpdateInput) => {
+    startTransition(async () => {
+      try {
+        const nextRabbits = await updateRabbitProfileAction(input);
+
+        setRabbits(nextRabbits);
+        setEditingRabbit(null);
+        setIsRabbitModalOpen(false);
+        setMessage(`Kaninchenprofil „${input.name.trim()}“ wurde aktualisiert.`);
+      } catch {
+        setMessage("Kaninchenprofil konnte nicht aktualisiert werden. Bitte prüfe die Eingaben.");
+      }
+    });
+  };
+
+  const deleteRabbitProfile = (rabbit: RabbitProfileView) => {
+    const confirmed = window.confirm(
+      `Kaninchenprofil „${rabbit.name}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const nextRabbits = await deleteRabbitProfileAction(rabbit.id);
+
+        setRabbits(nextRabbits);
+        setMessage(`Kaninchenprofil „${rabbit.name}“ wurde gelöscht.`);
+      } catch {
+        setMessage("Kaninchenprofil konnte nicht gelöscht werden.");
+      }
+    });
+  };
+
+  const openCreateRabbitModal = () => {
+    setEditingRabbit(null);
+    setIsRabbitModalOpen(true);
+  };
+
+  const openEditRabbitModal = (rabbit: RabbitProfileView) => {
+    setEditingRabbit(rabbit);
+    setIsRabbitModalOpen(true);
+  };
+
+  const closeRabbitModal = () => {
+    setEditingRabbit(null);
+    setIsRabbitModalOpen(false);
+  };  
+
   const setCurrentView = (nextView: RabbitView) => {
     setView(nextView);
   };
@@ -218,7 +276,7 @@ const resetProgress = () => {
           isPending={isPending}
           message={message}
           showRabbitAddButton={view === "rabbits"}
-          onAddRabbit={() => setIsRabbitModalOpen(true)}
+          onAddRabbit={openCreateRabbitModal}
         />
 
         <AnimatePresence>
@@ -287,9 +345,13 @@ const resetProgress = () => {
             totalXp={totalXp}
             achievements={achievements}
             rabbits={rabbits}
+            editingRabbit={editingRabbit}
             isRabbitModalOpen={isRabbitModalOpen}
-            onCloseRabbitModal={() => setIsRabbitModalOpen(false)}
+            onCloseRabbitModal={closeRabbitModal}
             onCreateRabbit={createRabbitProfile}
+            onUpdateRabbit={updateRabbitProfile}
+            onEditRabbit={openEditRabbitModal}
+            onDeleteRabbit={deleteRabbitProfile}
             onReset={resetProgress}
             onResetAll={resetAllRabbitData}
           />
