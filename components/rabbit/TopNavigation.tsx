@@ -19,9 +19,23 @@ export function TopNavigation({
   visibleTabs = topTabs,
   onChangeView,
 }: TopNavigationProps) {
+  const currentIndex = Math.max(
+    0,
+    visibleTabs.findIndex((tab) => tab.view === view),
+  );
+
+  const previousTab = visibleTabs[(currentIndex - 1 + visibleTabs.length) % visibleTabs.length];
+  const nextTab = visibleTabs[(currentIndex + 1) % visibleTabs.length];
+
   return (
     <header className="topbar" aria-label="Hauptnavigation">
-      <button className="shoulder" aria-label="Vorheriger Bereich" type="button">
+      <button
+        className="shoulder"
+        aria-label={`Vorheriger Bereich: ${previousTab.label}`}
+        title={`Vorheriger Bereich: ${previousTab.label}`}
+        type="button"
+        onClick={() => onChangeView(previousTab.view)}
+      >
         L
       </button>
 
@@ -38,7 +52,13 @@ export function TopNavigation({
         ))}
       </nav>
 
-      <button className="shoulder" aria-label="Nächster Bereich" type="button">
+      <button
+        className="shoulder"
+        aria-label={`Nächster Bereich: ${nextTab.label}`}
+        title={`Nächster Bereich: ${nextTab.label}`}
+        type="button"
+        onClick={() => onChangeView(nextTab.view)}
+      >
         R
       </button>
     </header>

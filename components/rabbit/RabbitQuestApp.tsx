@@ -108,6 +108,36 @@ export function RabbitQuestApp({
     };
   }, [message]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      const currentIndex = topTabs.findIndex((tab) => tab.view === view);
+
+      if (currentIndex < 0) {
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        const previousTab = topTabs[(currentIndex - 1 + topTabs.length) % topTabs.length];
+        setCurrentView(previousTab.view);
+      }
+
+      if (event.key === "ArrowRight") {
+        const nextTab = topTabs[(currentIndex + 1) % topTabs.length];
+        setCurrentView(nextTab.view);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [view]);
+
   const activeTask = useMemo(
     () => rabbitTasks.find((task) => task.id === activeTaskId) ?? rabbitTasks[0],
     [activeTaskId],
