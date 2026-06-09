@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   createRabbitProfileAction,
   deleteRabbitProfileAction,
@@ -65,7 +65,24 @@ export function RabbitQuestApp({
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("home");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
+  const [isMessageVisible, setIsMessageVisible] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    setIsMessageVisible(true);
+
+    const timeout = window.setTimeout(() => {
+      setIsMessageVisible(false);
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [message]);
 
   const activeTask = useMemo(
     () => rabbitTasks.find((task) => task.id === activeTaskId) ?? rabbitTasks[0],
@@ -274,7 +291,7 @@ const resetProgress = () => {
         <UserStrip
           userName={userName}
           isPending={isPending}
-          message={message}
+          message={isMessageVisible ? message : ""}
           showRabbitAddButton={view === "rabbits"}
           onAddRabbit={openCreateRabbitModal}
         />

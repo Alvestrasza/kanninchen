@@ -1886,3 +1886,27 @@ a {
     justify-content: flex-start;
   }
 }
+
+.user-strip {
+  grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 2fr) minmax(10rem, 1fr);
+  align-items: center;
+}
+
+.sync-state {
+  justify-self: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-0.15rem);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.sync-state.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-strip-actions {
+  justify-self: end;
+}

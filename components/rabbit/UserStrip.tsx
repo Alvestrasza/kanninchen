@@ -24,7 +24,7 @@ export function UserStrip({
         <strong>{userName}</strong>
       </div>
 
-      <span className="sync-state">
+      <span className={`sync-state${isPending || message ? " visible" : ""}`}>
         {isPending ? "Synchronisiere…" : message}
       </span>
 
