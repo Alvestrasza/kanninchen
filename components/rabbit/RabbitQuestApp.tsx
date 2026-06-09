@@ -77,8 +77,7 @@ export function RabbitQuestApp({
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const activeFamily = initialFamily;
-  const canUseParentArea =
-    initialUserRoles.includes("parent") || initialUserRoles.includes("admin");
+  const canUseParentArea = activeFamily.role === "parent" || activeFamily.role === "admin";
   const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
   const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
   const [streakCount, setStreakCount] = useState(initialStreakCount);

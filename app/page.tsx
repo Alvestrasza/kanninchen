@@ -32,8 +32,7 @@ export default async function HomePage() {
 
   const state = await getUserProgress(session.user.id, activeFamily.id);
 
-  const canUseParentArea =
-    session.user.roles?.includes("parent") || session.user.roles?.includes("admin");
+  const canUseParentArea = activeFamily.role === "parent" || activeFamily.role === "admin";
 
   let parentDashboard: ParentDashboardView | null = null;
   let parentChildOptions: RabbitCaretakerChildOption[] = [];
