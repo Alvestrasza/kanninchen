@@ -88,6 +88,7 @@ export function RabbitQuestApp({
   const [editingRabbit, setEditingRabbit] = useState<RabbitProfileView | null>(null);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("home");
+  const [navigationDirection, setNavigationDirection] = useState(1);
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
   const [isMessageVisible, setIsMessageVisible] = useState(true);
   const [isPending, startTransition] = useTransition();
@@ -333,6 +334,20 @@ const resetProgress = () => {
   };  
 
   const setCurrentView = (nextView: RabbitView) => {
+    if (nextView === view) {
+      return;
+    }
+
+    const currentIndex = topTabs.findIndex((tab) => tab.view === view);
+    const nextIndex = topTabs.findIndex((tab) => tab.view === nextView);
+
+    if (currentIndex >= 0 && nextIndex >= 0) {
+      const forwardDistance = (nextIndex - currentIndex + topTabs.length) % topTabs.length;
+      const backwardDistance = (currentIndex - nextIndex + topTabs.length) % topTabs.length;
+
+      setNavigationDirection(forwardDistance <= backwardDistance ? 1 : -1);
+    }
+
     setView(nextView);
   };
 
@@ -375,15 +390,30 @@ const resetProgress = () => {
 
         <AnimatePresence mode="wait">
         {isPrimaryView ? (
-          <motion.main
-            key="dashboard"
-            className="dashboard"
-            id="dashboard"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.28 }}
-          >
+        <motion.main
+          key="dashboard"
+          className="dashboard purah-swipe-surface"
+          id="dashboard"
+          initial={{
+            opacity: 0,
+            x: navigationDirection * 42,
+            filter: "blur(0.35rem)",
+          }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            filter: "blur(0rem)",
+          }}
+          exit={{
+            opacity: 0,
+            x: navigationDirection * -34,
+            filter: "blur(0.3rem)",
+          }}
+          transition={{
+            duration: 0.34,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        >
             <TaskPanel activeTaskId={activeTask.id} progress={progress} onSelectTask={selectTask} />
             <QuestPanel
               task={activeTask}
@@ -403,14 +433,32 @@ const resetProgress = () => {
             />
           </motion.main>
         ) : (
-          <motion.section
-            key={view}
-            className="mobile-view panel"
-            initial={{ opacity: 0, y: 16, scale: 0.99 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.99 }}
-            transition={{ duration: 0.24 }}
-          >
+            <motion.section
+              key={view}
+              className="mobile-view panel purah-swipe-surface"
+              initial={{
+                opacity: 0,
+                x: navigationDirection * 42,
+                scale: 0.985,
+                filter: "blur(0.35rem)",
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                scale: 1,
+                filter: "blur(0rem)",
+              }}
+              exit={{
+                opacity: 0,
+                x: navigationDirection * -34,
+                scale: 0.985,
+                filter: "blur(0.3rem)",
+              }}
+              transition={{
+                duration: 0.34,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
             <SecondaryView
               view={view}
               userName={userName}

@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #031019;
-  --panel: rgba(2, 18, 30, 0.88);
-  --panel-strong: rgba(3, 26, 42, 0.95);
-  --cyan: #08bfff;
-  --cyan-soft: #75dbff;
-  --gold: #ffd35d;
+  --bg: #020b12;
+  --panel: rgba(2, 20, 31, 0.9);
+  --panel-strong: rgba(3, 31, 45, 0.96);
+  --cyan: #36d7ff;
+  --cyan-soft: #9beeff;
+  --cyan-deep: #075b7a;
+  --teal: #26f2d0;
+  --gold: #ffd36a;
   --gold-deep: #9b6b17;
-  --green: #7fce4d;
+  --green: #8ee760;
   --red: #ff695d;
-  --text: #d6f4ff;
-  --muted: #8fc9ea;
-  --line: rgba(0, 191, 255, 0.45);
+  --text: #dff8ff;
+  --muted: #91cfe6;
+  --line: rgba(54, 215, 255, 0.46);
   color-scheme: dark;
   font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -26,9 +28,12 @@ body {
   margin: 0;
   color: var(--text);
   background:
-    radial-gradient(circle at 50% -10%, rgba(0, 159, 255, 0.3), transparent 34rem),
-    linear-gradient(90deg, rgba(116, 126, 128, 0.28) 0 4rem, transparent 4rem calc(100% - 4rem), rgba(116, 126, 128, 0.28) calc(100% - 4rem)),
-    repeating-linear-gradient(90deg, transparent 0 2.8rem, rgba(0, 183, 255, 0.06) 2.8rem 2.85rem),
+    radial-gradient(circle at 50% -14%, rgba(38, 242, 208, 0.18), transparent 28rem),
+    radial-gradient(circle at 18% 18%, rgba(54, 215, 255, 0.18), transparent 26rem),
+    radial-gradient(circle at 82% 12%, rgba(255, 211, 106, 0.1), transparent 20rem),
+    linear-gradient(90deg, rgba(91, 102, 103, 0.28) 0 4rem, transparent 4rem calc(100% - 4rem), rgba(91, 102, 103, 0.28) calc(100% - 4rem)),
+    repeating-linear-gradient(90deg, transparent 0 2.8rem, rgba(54, 215, 255, 0.055) 2.8rem 2.86rem),
+    repeating-linear-gradient(0deg, transparent 0 3.2rem, rgba(38, 242, 208, 0.035) 3.2rem 3.25rem),
     var(--bg);
   overflow-x: hidden;
 }
@@ -71,10 +76,15 @@ button {
 
 .topbar,
 .bottom-nav {
-  background: rgba(4, 34, 58, 0.82);
-  border: 1px solid rgba(0, 191, 255, 0.35);
-  box-shadow: 0 0 1.3rem rgba(0, 191, 255, 0.35), inset 0 0 2rem rgba(0, 143, 255, 0.22);
-  backdrop-filter: blur(10px);
+  background:
+    linear-gradient(180deg, rgba(5, 44, 61, 0.92), rgba(1, 17, 26, 0.9)),
+    radial-gradient(circle at 50% 0%, rgba(38, 242, 208, 0.14), transparent 22rem);
+  border: 1px solid rgba(54, 215, 255, 0.38);
+  box-shadow:
+    0 0 1.4rem rgba(54, 215, 255, 0.34),
+    inset 0 0 2rem rgba(38, 242, 208, 0.12),
+    inset 0 -0.25rem 0 rgba(255, 211, 106, 0.08);
+  backdrop-filter: blur(12px);
 }
 
 .topbar {
@@ -104,9 +114,30 @@ button {
 
 .tab {
   position: relative;
-  color: #b9eaff;
+  color: #bff3ff;
   font-size: clamp(0.78rem, 1.1vw, 1.15rem);
-  text-shadow: 0 0 0.8rem rgba(0, 191, 255, 0.75);
+  text-shadow: 0 0 0.8rem rgba(54, 215, 255, 0.65);
+  transition:
+    transform 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.tab:hover {
+  color: #f1fdff;
+  background: rgba(54, 215, 255, 0.08);
+  box-shadow: inset 0 0 1rem rgba(54, 215, 255, 0.08);
+}
+
+.tab:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.tab.active {
+  color: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(54, 215, 255, 0.1), rgba(38, 242, 208, 0.04));
 }
 
 .tab.active::after {
@@ -116,19 +147,46 @@ button {
   right: 12%;
   bottom: 0;
   height: 0.38rem;
-  background: var(--cyan);
-  box-shadow: 0 0 1.1rem var(--cyan);
+  background: linear-gradient(90deg, transparent, var(--teal), var(--cyan), transparent);
+  box-shadow:
+    0 0 1.1rem var(--cyan),
+    0 0 1.8rem rgba(38, 242, 208, 0.55);
 }
 
 .shoulder {
-  width: 1.65rem;
-  height: 1.65rem;
-  border-radius: 0.25rem;
-  color: #06324d;
-  background: #a6edff;
-  font-weight: 800;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 211, 106, 0.68);
+  border-radius: 0.28rem;
+  color: #062b36;
+  background:
+    linear-gradient(180deg, #ffe7a3, #d69a35);
+  box-shadow:
+    0 0 0.75rem rgba(255, 211, 106, 0.45),
+    inset 0 0.15rem 0 rgba(255, 255, 255, 0.35),
+    inset 0 -0.18rem 0 rgba(76, 45, 5, 0.32);
+  font-weight: 950;
   display: grid;
   place-items: center;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
+}
+
+.shoulder:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 0 1rem rgba(255, 211, 106, 0.7),
+    inset 0 0.15rem 0 rgba(255, 255, 255, 0.38),
+    inset 0 -0.18rem 0 rgba(76, 45, 5, 0.35);
+}
+
+.shoulder:active {
+  transform: translateY(1px) scale(0.94);
+  box-shadow:
+    0 0 0.45rem rgba(255, 211, 106, 0.38),
+    inset 0 0.18rem 0 rgba(76, 45, 5, 0.3);
 }
 
 .dashboard {
@@ -139,10 +197,37 @@ button {
 }
 
 .panel {
-  background: linear-gradient(180deg, rgba(2, 18, 30, 0.96), rgba(1, 10, 18, 0.94));
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(2, 24, 36, 0.97), rgba(1, 9, 15, 0.95)),
+    radial-gradient(circle at 50% 0%, rgba(38, 242, 208, 0.12), transparent 26rem);
   border: 1px solid var(--line);
-  box-shadow: 0 0 1rem rgba(0, 183, 255, 0.22), inset 0 0 2.2rem rgba(0, 89, 137, 0.14);
-  border-radius: 0.35rem;
+  box-shadow:
+    0 0 1.2rem rgba(54, 215, 255, 0.24),
+    inset 0 0 2.4rem rgba(0, 104, 145, 0.18),
+    inset 0 0 0 1px rgba(155, 238, 255, 0.08);
+  border-radius: 0.38rem;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0.45rem;
+  border: 1px solid rgba(54, 215, 255, 0.12);
+  pointer-events: none;
+}
+
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent, rgba(155, 238, 255, 0.06), transparent),
+    repeating-linear-gradient(135deg, transparent 0 0.7rem, rgba(54, 215, 255, 0.025) 0.7rem 0.75rem);
+  opacity: 0.55;
+  mix-blend-mode: screen;
 }
 
 .panel-title,
@@ -833,16 +918,30 @@ a {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.025) 0,
-    rgba(255, 255, 255, 0.025) 1px,
-    transparent 1px,
-    transparent 4px
-  );
+  background:
+    linear-gradient(180deg, transparent, rgba(54, 215, 255, 0.035), transparent),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.026) 0,
+      rgba(255, 255, 255, 0.026) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  background-size: 100% 12rem, auto;
   mix-blend-mode: screen;
-  opacity: 0.3;
+  opacity: 0.32;
   z-index: 20;
+  animation: purah-scan 8s linear infinite;
+}
+
+@keyframes purah-scan {
+  from {
+    background-position: 0 -12rem, 0 0;
+  }
+
+  to {
+    background-position: 0 100vh, 0 0;
+  }
 }
 
 .user-strip {
@@ -2325,4 +2424,82 @@ a {
 .home-assigned-rabbit-card small {
   display: block;
   color: var(--muted);
+}
+
+.purah-swipe-surface {
+  will-change: transform, opacity, filter;
+}
+
+.task-item,
+.subtask,
+.info-tile,
+.guide-card,
+.home-hero-card,
+.home-care-card,
+.home-fact-card,
+.home-next-card,
+.home-badges-card,
+.home-assignment-card,
+.rabbit-profile-card,
+.achievement-card,
+.parent-dashboard-card,
+.family-member-card {
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.task-item:hover,
+.subtask:hover,
+.info-tile:hover,
+.guide-card:hover,
+.home-hero-card:hover,
+.home-care-card:hover,
+.home-fact-card:hover,
+.home-next-card:hover,
+.home-badges-card:hover,
+.home-assignment-card:hover,
+.rabbit-profile-card:hover,
+.achievement-card:hover,
+.parent-dashboard-card:hover,
+.family-member-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(54, 215, 255, 0.52);
+  box-shadow:
+    0 0 1rem rgba(54, 215, 255, 0.22),
+    inset 0 0 1.2rem rgba(38, 242, 208, 0.06);
+}
+
+.task-item:active,
+.ghost-button:active,
+.login-button:active,
+.danger-button:active,
+.complete-btn:active,
+.subtask-toggle:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.ghost-button,
+.login-button,
+.danger-button,
+.complete-btn,
+.subtask-toggle {
+  transition:
+    transform 120ms ease,
+    filter 120ms ease,
+    box-shadow 120ms ease,
+    border-color 120ms ease;
+}
+
+.ghost-button:hover {
+  filter: brightness(1.08);
+  border-color: rgba(54, 215, 255, 0.68);
+  box-shadow: 0 0 0.85rem rgba(54, 215, 255, 0.22);
+}
+
+.complete-btn:hover,
+.login-button:hover {
+  filter: brightness(1.08);
 }
