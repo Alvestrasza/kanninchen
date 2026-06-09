@@ -12,6 +12,7 @@ import {
   type RabbitAchievementView,
 } from "@/lib/rabbit/achievements";
 import { awardTaskCompletionXp, getUserTotalXp } from "@/lib/rabbit/xp";
+import { getUserRabbitProfiles, type RabbitProfileView } from "@/lib/rabbit/profiles";
 
 const APP_TIME_ZONE = "Europe/Berlin";
 
@@ -123,6 +124,7 @@ export type UserProgressState = {
   streakCount: number;
   totalXp: number;
   achievements: RabbitAchievementView[];
+  rabbits: RabbitProfileView[];
 };
 
 export type ProgressUpdateResult = {
@@ -131,6 +133,7 @@ export type ProgressUpdateResult = {
   totalXp: number;
   awardedXp: number;
   achievements: RabbitAchievementView[];
+  rabbits: RabbitProfileView[];
   unlockedAchievementIds: string[];
 };
 
@@ -202,9 +205,10 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
     });
   }
 
-  const [streakCount, totalXp] = await Promise.all([
+  const [streakCount, totalXp, rabbits] = await Promise.all([
     getUserStreak(userId),
     getUserTotalXp(userId),
+    getUserRabbitProfiles(userId),
   ]);
 
   const achievements = await getUserAchievementViews(userId, streakCount);
@@ -215,6 +219,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
     streakCount,
     totalXp,
     achievements,
+    rabbits,
   };
 }
 
@@ -291,6 +296,7 @@ export async function upsertTaskProgress(
     totalXp: state.totalXp,
     awardedXp,
     achievements: state.achievements,
+    rabbits: state.rabbits,
     unlockedAchievementIds,
   };
 }
@@ -334,6 +340,7 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
     totalXp: state.totalXp,
     awardedXp: 0,
     achievements: state.achievements,
+    rabbits: state.rabbits,
     unlockedAchievementIds: [],
   };
 }
@@ -381,6 +388,7 @@ export async function resetAllUserRabbitData(userId: string): Promise<ProgressUp
     totalXp: state.totalXp,
     awardedXp: 0,
     achievements: state.achievements,
+    rabbits: state.rabbits,
     unlockedAchievementIds: [],
   };
 }

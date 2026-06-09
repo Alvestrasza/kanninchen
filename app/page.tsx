@@ -20,6 +20,7 @@ export default async function HomePage() {
       initialStreakCount={state.streakCount}
       initialTotalXp={state.totalXp}
       initialAchievements={state.achievements}
+      initialRabbits={state.rabbits}
     />
   );
 }

@@ -11,6 +11,7 @@ import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { rabbitFacts } from "@/data/rabbit/facts";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
+import type { RabbitProfileView } from "@/lib/rabbit/profiles";
 
 type SecondaryViewProps = {
   view: RabbitView;
@@ -19,6 +20,7 @@ type SecondaryViewProps = {
   totalTasks: number;
   totalXp: number;
   achievements: RabbitAchievementView[];
+  rabbits: RabbitProfileView[];
   onReset: () => void;
   onResetAll: () => void;
 };
@@ -56,26 +58,17 @@ const rabbitGuideItems = [
   ],
 ] as const;
 
-const rabbitProfilePlaceholders = [
-  {
-    icon: "🐰",
-    title: "Kaninchenprofil vorbereiten",
-    description:
-      "Hier werden später Name, Geburtstag, Rasse, Farbe und besondere Hinweise zu jedem Kaninchen angezeigt.",
-  },
-  {
-    icon: "⚖️",
-    title: "Gesundheitsdaten",
-    description:
-      "Gewicht, Tierarztbesuche, Auffälligkeiten und Pflegehinweise können später pro Tier dokumentiert werden.",
-  },
-  {
-    icon: "💬",
-    title: "Charakter & Verhalten",
-    description:
-      "Notiere später, ob ein Kaninchen eher mutig, vorsichtig, neugierig oder ruhig ist.",
-  },
-] as const;
+function formatRabbitBirthday(birthday: string | null): string {
+  if (!birthday) {
+    return "Nicht hinterlegt";
+  }
+
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(birthday));
+}
 
 export function SecondaryView({
   view,
@@ -84,6 +77,7 @@ export function SecondaryView({
   totalTasks,
   totalXp,
   achievements,
+  rabbits,
   onReset,
   onResetAll,
 }: SecondaryViewProps) {
@@ -236,24 +230,61 @@ export function SecondaryView({
         <h2>Kaninchen</h2>
 
         <p>
-          Hier werden später die zu betreuenden Kaninchen hinterlegt. Für den Moment ist diese
-          Seite als Übersicht vorbereitet.
+          Hier findest du die Kaninchen, die betreut werden. Später können hier auch
+          Gesundheitsdaten, Charakter und besondere Hinweise gepflegt werden.
         </p>
 
-        <div className="rabbit-profile-grid">
-          {rabbitProfilePlaceholders.map((item) => (
-            <motion.article
-              className="guide-card rabbit-profile-card"
-              key={item.title}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <span>{item.icon}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </motion.article>
-          ))}
-        </div>
+        {rabbits.length > 0 ? (
+          <div className="rabbit-profile-grid">
+            {rabbits.map((rabbit) => (
+              <motion.article
+                className="rabbit-profile-card"
+                key={rabbit.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="rabbit-profile-head">
+                  <div className="rabbit-avatar">🐰</div>
+
+                  <div>
+                    <span className="home-kicker">Kaninchenprofil</span>
+                    <h3>{rabbit.name}</h3>
+                  </div>
+                </div>
+
+                <dl className="rabbit-profile-facts">
+                  <div>
+                    <dt>Rasse</dt>
+                    <dd>{rabbit.breed ?? "Nicht hinterlegt"}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Farbe</dt>
+                    <dd>{rabbit.color ?? "Nicht hinterlegt"}</dd>
+                  </div>
+
+                  <div>
+                    <dt>Geburtstag</dt>
+                    <dd>{formatRabbitBirthday(rabbit.birthday)}</dd>
+                  </div>
+                </dl>
+
+                {rabbit.notes && <p className="rabbit-profile-notes">{rabbit.notes}</p>}
+              </motion.article>
+            ))}
+          </div>
+        ) : (
+          <div className="rabbit-empty-state">
+            <div className="rabbit-empty-icon">🐇</div>
+
+            <h3>Noch keine Kaninchenprofile</h3>
+
+            <p>
+              Sobald ein Kaninchenprofil angelegt wurde, erscheint es hier mit Name,
+              Rasse, Farbe, Geburtstag und besonderen Hinweisen.
+            </p>
+          </div>
+        )}
       </>
     );
   }

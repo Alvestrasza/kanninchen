@@ -11,6 +11,7 @@ import {
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
+import type { RabbitProfileView } from "@/lib/rabbit/profiles";
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
@@ -33,6 +34,7 @@ type RabbitQuestAppProps = {
   initialStreakCount: number;
   initialTotalXp: number;
   initialAchievements: RabbitAchievementView[];
+  initialRabbits: RabbitProfileView[];
 };
 
 export function RabbitQuestApp({
@@ -42,6 +44,7 @@ export function RabbitQuestApp({
   initialStreakCount,
   initialTotalXp,
   initialAchievements,
+  initialRabbits,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
@@ -49,6 +52,7 @@ export function RabbitQuestApp({
   const [streakCount, setStreakCount] = useState(initialStreakCount);
   const [totalXp, setTotalXp] = useState(initialTotalXp);
   const [achievements, setAchievements] = useState(initialAchievements);
+  const [rabbits, setRabbits] = useState(initialRabbits);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
   const [view, setView] = useState<RabbitView>("home");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
@@ -97,6 +101,7 @@ export function RabbitQuestApp({
         setStreakCount(result.streakCount);
         setTotalXp(result.totalXp);
         setAchievements(result.achievements);
+        setRabbits(result.rabbits);
 
         if (result.unlockedAchievementIds.length > 0) {
           setRecentUnlockIds(result.unlockedAchievementIds);
@@ -147,6 +152,7 @@ const resetProgress = () => {
       setStreakCount(result.streakCount);
       setTotalXp(result.totalXp);
       setAchievements(result.achievements);
+      setRabbits(result.rabbits);
       setRecentUnlockIds([]);
       setMessage("Tagesfortschritt wurde zurückgesetzt. XP und Erfolge bleiben erhalten.");
     } catch {
@@ -172,6 +178,7 @@ const resetProgress = () => {
         setStreakCount(result.streakCount);
         setTotalXp(result.totalXp);
         setAchievements(result.achievements);
+        setRabbits(result.rabbits);
         setRecentUnlockIds([]);
         setMessage("Test-Reset abgeschlossen. Aufgaben, XP und Erfolge wurden zurückgesetzt.");
       } catch {
@@ -257,6 +264,7 @@ const resetProgress = () => {
             totalTasks={totalDailyTasks}
             totalXp={totalXp}
             achievements={achievements}
+            rabbits={rabbits}
             onReset={resetProgress}
             onResetAll={resetAllRabbitData}
           />
