@@ -1910,3 +1910,10 @@ a {
 .user-strip-actions {
   justify-self: end;
 }
+
+.parent-dashboard-placeholder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.2rem;
+}

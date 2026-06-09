@@ -611,6 +611,39 @@ export function SecondaryView({
     );
   }
 
+  if (view === "parents") {
+    return (
+      <>
+        <h2>Eltern</h2>
+
+        <p>
+          Dieser Bereich wird die Übersicht für Eltern. Hier sollen später Tagesfortschritt,
+          Historie, Erfolge und wichtige Beobachtungen der zugeordneten Kinder sichtbar werden.
+        </p>
+
+        <div className="parent-dashboard-placeholder">
+          <div className="info-tile">
+            <strong>🔐</strong>
+            <br />
+            Rollenprüfung aktiv
+          </div>
+
+          <div className="info-tile">
+            <strong>📋</strong>
+            <br />
+            Historie folgt
+          </div>
+
+          <div className="info-tile">
+            <strong>👨‍👧</strong>
+            <br />
+            Eltern-Kind-Zuordnung folgt
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (view === "settings") {
     return (
       <>

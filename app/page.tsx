@@ -15,6 +15,7 @@ export default async function HomePage() {
   return (
     <RabbitQuestApp
       userName={session.user.name ?? session.user.email ?? "Tierpfleger"}
+      initialUserRoles={session.user.roles ?? []}
       initialActiveTaskId={state.activeTaskId}
       initialProgress={state.progress}
       initialStreakCount={state.streakCount}

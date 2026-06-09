@@ -7,7 +7,7 @@
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-
+import { resolveAppRolesFromTokens } from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
 
 function requiredEnv(name: string): string {
@@ -34,10 +34,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/",
   },
   callbacks: {
-    session({ session, user }) {
+    async session({ session, user }) {
       if (session.user) {
+        const account = await prisma.account.findFirst({
+          where: {
+            userId: user.id,
+            provider: "keycloak",
+          },
+          select: {
+            access_token: true,
+            id_token: true,
+          },
+        });
+
+        const roles = resolveAppRolesFromTokens({
+          idToken: account?.id_token,
+          accessToken: account?.access_token,
+          clientId: process.env.AUTH_KEYCLOAK_ID,
+        });
+
         session.user.id = user.id;
+        session.user.roles = roles;
+        session.user.isChild = roles.includes("child");
+        session.user.isParent = roles.includes("parent");
+        session.user.isAdmin = roles.includes("admin");
+        session.user.isTester = roles.includes("tester");
       }
+
       return session;
     },
   },

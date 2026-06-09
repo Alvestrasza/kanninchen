@@ -1,13 +1,24 @@
 "use client";
 
+// Meta
+// Version: 0.1.1
+// Created: 2026-06-08
+// Updated: 2026-06-09
+// Purpose: Top navigation for Kaninchen Quest.
+
 import { topTabs, type RabbitView } from "@/components/rabbit/rabbit-navigation";
 
 type TopNavigationProps = {
   view: RabbitView;
+  visibleTabs?: Array<{ view: RabbitView; label: string }>;
   onChangeView: (view: RabbitView) => void;
 };
 
-export function TopNavigation({ view, onChangeView }: TopNavigationProps) {
+export function TopNavigation({
+  view,
+  visibleTabs = topTabs,
+  onChangeView,
+}: TopNavigationProps) {
   return (
     <header className="topbar" aria-label="Hauptnavigation">
       <button className="shoulder" aria-label="Vorheriger Bereich" type="button">
@@ -15,7 +26,7 @@ export function TopNavigation({ view, onChangeView }: TopNavigationProps) {
       </button>
 
       <nav className="tabs" id="topTabs">
-        {topTabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.view}
             className={`tab ${view === tab.view ? "active" : ""}`}

@@ -14,12 +14,13 @@ import {
 import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
+import type { AppRole } from "@/lib/auth/roles";
 import type {
   RabbitProfileCreateInput,
   RabbitProfileUpdateInput,
   RabbitProfileView,
 } from "@/lib/rabbit/profiles";
-import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
+import { topTabs, type RabbitView } from "@/components/rabbit/rabbit-navigation";
 import { TaskPanel } from "@/components/rabbit/TaskPanel";
 import {
   completedFromSubtasks,
@@ -36,6 +37,7 @@ import { TopNavigation } from "@/components/rabbit/TopNavigation";
 
 type RabbitQuestAppProps = {
   userName: string;
+  initialUserRoles: AppRole[];
   initialActiveTaskId: string;
   initialProgress: TaskProgressState;
   initialStreakCount: number;
@@ -46,6 +48,7 @@ type RabbitQuestAppProps = {
 
 export function RabbitQuestApp({
   userName,
+  initialUserRoles,
   initialActiveTaskId,
   initialProgress,
   initialStreakCount,
@@ -54,6 +57,12 @@ export function RabbitQuestApp({
   initialRabbits,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
+  const canUseParentArea =
+    initialUserRoles.includes("parent") || initialUserRoles.includes("admin");
+
+  const visibleTabs = topTabs.filter(
+    (tab) => tab.view !== "parents" || canUseParentArea,
+  ); 
   const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
   const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
   const [streakCount, setStreakCount] = useState(initialStreakCount);
@@ -279,6 +288,12 @@ const resetProgress = () => {
   };  
 
   const setCurrentView = (nextView: RabbitView) => {
+    if (nextView === "parents" && !canUseParentArea) {
+      setView("home");
+      setMessage("Der Elternbereich ist für diesen Benutzer nicht freigeschaltet.");
+      return;
+    }
+
     setView(nextView);
   };
 
@@ -286,7 +301,11 @@ const resetProgress = () => {
     <div className="app-shell">
       <div className="scanline" aria-hidden="true" />
 
-        <TopNavigation view={view} onChangeView={setCurrentView} />
+        <TopNavigation
+          view={view}
+          visibleTabs={visibleTabs}
+          onChangeView={setCurrentView}
+        />
 
         <UserStrip
           userName={userName}
