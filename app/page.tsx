@@ -6,9 +6,7 @@ import { getUserProgress } from "@/lib/rabbit/progress";
 import { getParentDashboard } from "@/lib/rabbit/parent-dashboard";
 import {
   getFamilyChildOptions,
-  getRabbitCaretakerAssignments,
   getVisibleRabbitCaretakerAssignments,
-  type RabbitCaretakerAssignmentView,
   type RabbitCaretakerChildOption,
 } from "@/lib/rabbit/caretaker-assignments";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
@@ -35,7 +33,6 @@ export default async function HomePage() {
 
   let parentDashboard: ParentDashboardView | null = null;
   let parentChildOptions: RabbitCaretakerChildOption[] = [];
-  let parentCaretakerAssignments: RabbitCaretakerAssignmentView[] = [];
 
   const caretakerAssignments = await getVisibleRabbitCaretakerAssignments(
     session.user.id,
@@ -43,10 +40,9 @@ export default async function HomePage() {
   );
 
   if (canUseParentArea) {
-    [parentDashboard, parentChildOptions, parentCaretakerAssignments] = await Promise.all([
+    [parentDashboard, parentChildOptions] = await Promise.all([
       getParentDashboard(activeFamily.id, session.user.id),
       getFamilyChildOptions(session.user.id, activeFamily.id),
-      getRabbitCaretakerAssignments(session.user.id, activeFamily.id),
     ]);
   }
 

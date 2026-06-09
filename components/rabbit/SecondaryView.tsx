@@ -305,6 +305,51 @@ export function SecondaryView({
           <p>{homeStatusText}</p>
         </section>
 
+        {canUseParentArea ? (
+          <section className="home-assignment-card home-wide">
+            <div className="section-label">Familienzuständigkeit</div>
+
+            <article className="achievement-mini-card">
+              <span>🐰</span>
+
+              <div>
+                <strong>
+                  {rabbits.length - rabbitsWithoutPrimaryCaretaker.length} / {rabbits.length} Kaninchen mit Hauptzuständigkeit
+                </strong>
+                <small>
+                  {rabbitsWithoutPrimaryCaretaker.length === 0
+                    ? "Alle Kaninchen haben einen Hauptverantwortlichen."
+                    : `${rabbitsWithoutPrimaryCaretaker.length} Kaninchen brauchen noch eine Hauptzuordnung.`}
+                </small>
+              </div>
+            </article>
+          </section>
+        ) : (
+          <section className="home-assignment-card home-wide">
+            <div className="section-label">Meine Kaninchen</div>
+
+            {myAssignedRabbits.length > 0 ? (
+              <div className="home-badge-row">
+                {myAssignedRabbits.map((rabbit) => (
+                  <div className="home-badge" key={rabbit.id} title={rabbit.name}>
+                    <span>🐰</span>
+                    <small>{rabbit.name}</small>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <article className="achievement-mini-card">
+                <span>🐇</span>
+
+                <div>
+                  <strong>Noch kein Kaninchen zugewiesen</strong>
+                  <small>Ein Elternteil kann dir im Elternbereich ein Kaninchen zuordnen.</small>
+                </div>
+              </article>
+            )}
+          </section>
+        )}
+
         <div className="home-dashboard home-dashboard-split">
           <motion.article
             className="home-hero-card"
@@ -352,49 +397,6 @@ export function SecondaryView({
               <p>{homeStatusText}</p>
             </div>
           </motion.article>
-
-          <section className="home-assignment-card home-wide">
-            <div className="section-label">Meine Kaninchen</div>
-
-            {myAssignedRabbits.length > 0 ? (
-              <div className="home-badge-row">
-                {myAssignedRabbits.map((rabbit) => (
-                  <div className="home-badge" key={rabbit.id} title={rabbit.name}>
-                    <span>🐰</span>
-                    <small>{rabbit.name}</small>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <article className="achievement-mini-card">
-                <span>🐇</span>
-
-                <div>
-                  <strong>Noch kein Kaninchen zugewiesen</strong>
-                  <small>Ein Elternteil kann dir im Elternbereich ein Kaninchen zuordnen.</small>
-                </div>
-              </article>
-            )}
-          </section>
-
-          <section className="home-assignment-card home-wide">
-            <div className="section-label">Familienzuständigkeit</div>
-
-            <article className="achievement-mini-card">
-              <span>🐰</span>
-
-              <div>
-                <strong>
-                  {rabbits.length - rabbitsWithoutPrimaryCaretaker.length} / {rabbits.length} Kaninchen mit Hauptzuständigkeit
-                </strong>
-                <small>
-                  {rabbitsWithoutPrimaryCaretaker.length === 0
-                    ? "Alle Kaninchen haben einen Hauptverantwortlichen."
-                    : `${rabbitsWithoutPrimaryCaretaker.length} Kaninchen brauchen noch eine Hauptzuordnung.`}
-                </small>
-              </div>
-            </article>
-          </section>
 
           <section className="home-fact-card home-wide">
             <div className="section-label">Wusstest du schon?</div>

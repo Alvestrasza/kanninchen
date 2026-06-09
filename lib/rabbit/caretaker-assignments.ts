@@ -210,10 +210,23 @@ export async function removeRabbitCaretakerAssignment(
 ): Promise<RabbitCaretakerAssignmentView[]> {
   await assertParentOrAdmin(viewerUserId, familyId);
 
-  await prisma.rabbitCaretakerAssignment.delete({
+  const assignment = await prisma.rabbitCaretakerAssignment.findFirst({
     where: {
       id: assignmentId,
       familyId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!assignment) {
+    throw new Error("Caretaker assignment was not found in this family.");
+  }
+
+  await prisma.rabbitCaretakerAssignment.delete({
+    where: {
+      id: assignment.id,
     },
   });
 
