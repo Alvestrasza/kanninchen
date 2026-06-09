@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
 import { auth } from "@/auth";
 import {
   resetAllProgress,
   resetAllUserRabbitData,
   setActiveTask,
+  setUserTheme,
   type ProgressUpdateResult,
   upsertTaskProgress,
 } from "@/lib/rabbit/progress";
@@ -27,6 +27,7 @@ import {
   type RabbitCaretakerAssignmentView,
   type RabbitCaretakerChildOption,
 } from "@/lib/rabbit/caretaker-assignments";
+import type { RabbitThemeId } from "@/lib/rabbit/themes";
 
 async function requireUserId(): Promise<string> {
   const session = await auth();
@@ -54,6 +55,13 @@ export async function setActiveTaskAction(taskId: string): Promise<string> {
   const activeTaskId = await setActiveTask(userId, taskId);
   revalidatePath("/");
   return activeTaskId;
+}
+
+export async function setThemeAction(theme: RabbitThemeId): Promise<RabbitThemeId> {
+  const userId = await requireUserId();
+  const nextTheme = await setUserTheme(userId, theme);
+  revalidatePath("/");
+  return nextTheme;
 }
 
 export async function resetProgressAction(familyId: string): Promise<ProgressUpdateResult> {

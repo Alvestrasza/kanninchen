@@ -13,6 +13,12 @@ import {
 } from "@/lib/rabbit/achievements";
 import { awardTaskCompletionXp, getUserTotalXp } from "@/lib/rabbit/xp";
 import { getUserRabbitProfiles, type RabbitProfileView } from "@/lib/rabbit/profiles";
+import {
+  DEFAULT_RABBIT_THEME,
+  isRabbitThemeId,
+  normalizeRabbitTheme,
+  type RabbitThemeId,
+} from "@/lib/rabbit/themes";
 
 const APP_TIME_ZONE = "Europe/Berlin";
 
@@ -120,6 +126,7 @@ export type TaskProgressState = Record<
 
 export type UserProgressState = {
   activeTaskId: string;
+  theme: RabbitThemeId;
   progress: TaskProgressState;
   streakCount: number;
   totalXp: number;
@@ -169,10 +176,12 @@ export async function getUserProgress(
         userId,
         activeTaskId: getDefaultActiveTaskId(),
         activeDateKey: dateKey,
+        theme: DEFAULT_RABBIT_THEME,
       },
       select: {
         activeTaskId: true,
         activeDateKey: true,
+        theme: true,
       },
     }),
   ]);
@@ -218,6 +227,7 @@ export async function getUserProgress(
 
   return {
     activeTaskId,
+    theme: normalizeRabbitTheme(preference.theme),
     progress,
     streakCount,
     totalXp,
@@ -401,4 +411,30 @@ export async function resetAllUserRabbitData(
     rabbits: state.rabbits,
     unlockedAchievementIds: [],
   };
+}
+
+export async function setUserTheme(userId: string, theme: RabbitThemeId): Promise<RabbitThemeId> {
+  if (!isRabbitThemeId(theme)) {
+    throw new Error(`Unknown rabbit theme: ${theme}`);
+  }
+
+  const preference = await prisma.rabbitUserPreference.upsert({
+    where: {
+      userId,
+    },
+    update: {
+      theme,
+    },
+    create: {
+      userId,
+      activeTaskId: getDefaultActiveTaskId(),
+      activeDateKey: getTodayDateKey(),
+      theme,
+    },
+    select: {
+      theme: true,
+    },
+  });
+
+  return normalizeRabbitTheme(preference.theme);
 }

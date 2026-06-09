@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 import { rabbitFacts } from "@/data/rabbit/facts";
+import { rabbitThemes, type RabbitThemeId } from "@/lib/rabbit/themes";
 import {
   assignRabbitCaretakerAction,
   removeRabbitCaretakerAssignmentAction,
@@ -39,6 +40,8 @@ type SecondaryViewProps = {
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
   userId: string;
   initialFamilyMembers: RabbitFamilyMemberOverviewView[];
+  activeTheme: RabbitThemeId;
+  onThemeChange: (theme: RabbitThemeId) => void;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -141,6 +144,8 @@ export function SecondaryView({
   initialCaretakerAssignments,
   userId,
   initialFamilyMembers,
+  activeTheme,
+  onThemeChange,
   completedCount,
   totalTasks,
   totalXp,
@@ -842,6 +847,32 @@ export function SecondaryView({
           Hier findest du Einstellungen, Testfunktionen und später die Verwaltung für Eltern
           und Administratoren.
         </p>
+
+        <section className="theme-section">
+          <div className="section-label">Darstellung</div>
+
+          <div className="theme-grid">
+            {rabbitThemes.map((theme) => (
+              <button
+                className={`theme-card ${activeTheme === theme.id ? "active" : ""}`}
+                key={theme.id}
+                type="button"
+                onClick={() => onThemeChange(theme.id)}
+              >
+                <span className="theme-icon">{theme.icon}</span>
+
+                <div>
+                  <strong>{theme.name}</strong>
+                  <small>{theme.description}</small>
+                </div>
+
+                <span className="theme-state">
+                  {activeTheme === theme.id ? "Aktiv" : "Wählen"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         <div className="mobile-grid">
           <div className="info-tile">

@@ -2516,3 +2516,167 @@ a {
   filter: brightness(1.08);
 }
 
+
+/* User selectable themes */
+
+:root[data-rabbit-theme="classic"] {
+  --bg: #031019;
+  --panel: rgba(2, 18, 30, 0.88);
+  --panel-strong: rgba(3, 26, 42, 0.95);
+  --cyan: #08bfff;
+  --cyan-soft: #75dbff;
+  --gold: #ffd35d;
+  --gold-deep: #9b6b17;
+  --green: #7fce4d;
+  --red: #ff695d;
+  --text: #d6f4ff;
+  --muted: #8fc9ea;
+  --line: rgba(0, 191, 255, 0.45);
+}
+
+:root[data-rabbit-theme="purah"] {
+  --bg: #06151a;
+  --panel: rgba(8, 35, 40, 0.88);
+  --panel-strong: rgba(11, 48, 54, 0.95);
+  --cyan: #43e8dc;
+  --cyan-soft: #b7fff4;
+  --gold: #f2d083;
+  --gold-deep: #8a6a33;
+  --green: #9be47a;
+  --red: #ef7668;
+  --text: #e8fffb;
+  --muted: #9bd8d1;
+  --line: rgba(67, 232, 220, 0.42);
+}
+
+:root[data-rabbit-theme="forest"] {
+  --bg: #07130b;
+  --panel: rgba(12, 34, 18, 0.9);
+  --panel-strong: rgba(17, 48, 26, 0.96);
+  --cyan: #8ee760;
+  --cyan-soft: #d7ffc9;
+  --gold: #f0c96a;
+  --gold-deep: #8d6320;
+  --green: #91e86b;
+  --red: #ff7d6d;
+  --text: #ecffe7;
+  --muted: #b3d8a8;
+  --line: rgba(142, 231, 96, 0.42);
+}
+
+:root[data-rabbit-theme="night"] {
+  --bg: #02060c;
+  --panel: rgba(4, 12, 22, 0.92);
+  --panel-strong: rgba(7, 18, 32, 0.96);
+  --cyan: #72a8ff;
+  --cyan-soft: #b8d4ff;
+  --gold: #c9b16a;
+  --gold-deep: #746234;
+  --green: #79c779;
+  --red: #d96b73;
+  --text: #dbeaff;
+  --muted: #8aa4c8;
+  --line: rgba(114, 168, 255, 0.36);
+}
+
+:root[data-rabbit-theme="purah"] body {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(67, 232, 220, 0.22), transparent 30rem),
+    radial-gradient(circle at 12% 20%, rgba(242, 208, 131, 0.12), transparent 22rem),
+    repeating-linear-gradient(90deg, transparent 0 3rem, rgba(67, 232, 220, 0.045) 3rem 3.04rem),
+    var(--bg);
+}
+
+:root[data-rabbit-theme="forest"] body {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(142, 231, 96, 0.18), transparent 30rem),
+    radial-gradient(circle at 12% 20%, rgba(240, 201, 106, 0.14), transparent 22rem),
+    repeating-linear-gradient(90deg, transparent 0 3rem, rgba(142, 231, 96, 0.04) 3rem 3.04rem),
+    var(--bg);
+}
+
+:root[data-rabbit-theme="night"] body {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(114, 168, 255, 0.14), transparent 30rem),
+    repeating-linear-gradient(90deg, transparent 0 3rem, rgba(114, 168, 255, 0.03) 3rem 3.04rem),
+    var(--bg);
+}
+
+.theme-section {
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(0, 191, 255, 0.22);
+  border-radius: 0.35rem;
+  background: rgba(1, 18, 30, 0.34);
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem;
+}
+
+.theme-card {
+  min-height: 6.2rem;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(0, 191, 255, 0.24);
+  border-radius: 0.35rem;
+  background: rgba(4, 28, 44, 0.62);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+.theme-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--line);
+  box-shadow: 0 0 0.8rem rgba(0, 191, 255, 0.18);
+}
+
+.theme-card.active {
+  border-color: var(--gold);
+  background:
+    linear-gradient(180deg, rgba(255, 211, 93, 0.12), rgba(4, 28, 44, 0.72));
+  box-shadow:
+    0 0 1rem rgba(255, 211, 93, 0.22),
+    inset 0 0 1rem rgba(255, 211, 93, 0.08);
+}
+
+.theme-icon {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.08);
+  font-size: 1.25rem;
+}
+
+.theme-card strong {
+  display: block;
+  color: var(--cyan-soft);
+}
+
+.theme-card small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.theme-state {
+  color: var(--gold);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}

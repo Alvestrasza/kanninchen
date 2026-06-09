@@ -17,6 +17,7 @@ import {
   resetProgressAction,
   saveTaskProgressAction,
   setActiveTaskAction,
+  setThemeAction,
   updateRabbitProfileAction,
 } from "@/app/actions";
 import {
@@ -32,6 +33,7 @@ import type { AppRole } from "@/lib/auth/roles";
 import type { RabbitFamilyView } from "@/lib/rabbit/families";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
 import type { RabbitFamilyMemberOverviewView } from "@/lib/rabbit/family-members";
+import type { RabbitThemeId } from "@/lib/rabbit/themes";
 import type {
   RabbitCaretakerAssignmentView,
   RabbitCaretakerChildOption,
@@ -52,6 +54,7 @@ type RabbitQuestAppProps = {
   initialTotalXp: number;
   initialAchievements: RabbitAchievementView[];
   initialRabbits: RabbitProfileView[];
+  initialTheme: RabbitThemeId;
   initialParentDashboard: ParentDashboardView | null;
   initialParentChildOptions: RabbitCaretakerChildOption[];
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
@@ -69,6 +72,7 @@ export function RabbitQuestApp({
   initialTotalXp,
   initialAchievements,
   initialRabbits,
+  initialTheme,
   initialParentDashboard,
   initialParentChildOptions,
   initialCaretakerAssignments,
@@ -84,6 +88,7 @@ export function RabbitQuestApp({
   const [totalXp, setTotalXp] = useState(initialTotalXp);
   const [achievements, setAchievements] = useState(initialAchievements);
   const [rabbits, setRabbits] = useState(initialRabbits);
+  const [theme, setTheme] = useState<RabbitThemeId>(initialTheme);
   const [isRabbitModalOpen, setIsRabbitModalOpen] = useState(false);
   const [editingRabbit, setEditingRabbit] = useState<RabbitProfileView | null>(null);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
@@ -92,6 +97,14 @@ export function RabbitQuestApp({
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
   const [isMessageVisible, setIsMessageVisible] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    document.documentElement.dataset.rabbitTheme = theme;
+
+    return () => {
+      delete document.documentElement.dataset.rabbitTheme;
+    };
+  }, [theme]);
 
   useEffect(() => {
     if (!message) {
@@ -333,6 +346,21 @@ const resetProgress = () => {
     setIsRabbitModalOpen(false);
   };  
 
+  const changeTheme = (nextTheme: RabbitThemeId) => {
+    setTheme(nextTheme);
+    setMessage("Theme gespeichert.");
+
+    startTransition(async () => {
+      try {
+        const savedTheme = await setThemeAction(nextTheme);
+        setTheme(savedTheme);
+        setMessage("Theme wurde gespeichert.");
+      } catch {
+        setMessage("Theme konnte nicht gespeichert werden.");
+      }
+    });
+  };
+
   const setCurrentView = (nextView: RabbitView) => {
     if (nextView === view) {
       return;
@@ -352,7 +380,7 @@ const resetProgress = () => {
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={theme}>
       <div className="scanline" aria-hidden="true" />
 
         <TopNavigation
@@ -475,6 +503,8 @@ const resetProgress = () => {
               initialCaretakerAssignments={initialCaretakerAssignments}
               userId={userId}
               initialFamilyMembers={initialFamilyMembers}
+              activeTheme={theme}
+              onThemeChange={changeTheme}
               editingRabbit={editingRabbit}
               isRabbitModalOpen={isRabbitModalOpen}
               onCloseRabbitModal={closeRabbitModal}

@@ -62,6 +62,7 @@ export default async function HomePage() {
       initialTotalXp={state.totalXp}
       initialAchievements={state.achievements}
       initialRabbits={state.rabbits}
+      initialTheme={state.theme}
       userId={session.user.id}
       initialParentDashboard={parentDashboard}
       initialParentChildOptions={parentChildOptions}
