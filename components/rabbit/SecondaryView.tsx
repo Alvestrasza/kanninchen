@@ -7,8 +7,8 @@
 // Purpose: Secondary views for Kaninchen Quest, including dashboard, lexicon, rabbit profiles, achievements and settings.
 
 import { motion } from "motion/react";
-
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
+import { rabbitFacts } from "@/data/rabbit/facts";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 
@@ -96,6 +96,8 @@ export function SecondaryView({
     .sort((left, right) => right.percent - left.percent)[0];
 
   const dailyPercent = Math.round((completedCount / Math.max(1, totalTasks)) * 100);
+  const factIndex = new Date().getDate() % rabbitFacts.length;
+  const rabbitFact = rabbitFacts[factIndex];
 
   const homeStatusText =
     completedCount === 0
@@ -161,31 +163,18 @@ export function SecondaryView({
             </div>
           </motion.article>
 
-          <div className="home-stat-grid home-wide">
-            <div className="info-tile">
-              <strong>{completedCount}</strong>
-              <br />
-              Heute erledigt
-            </div>
+          <section className="home-fact-card home-wide">
+            <div className="section-label">Wusstest du schon?</div>
 
-            <div className="info-tile">
-              <strong>{unlockedCount}</strong>
-              <br />
-              Erfolge freigeschaltet
-            </div>
+            <div className="home-fact-content">
+              <div className="home-fact-icon">{rabbitFact.icon}</div>
 
-            <div className="info-tile">
-              <strong>{totalXp.toLocaleString("de-DE")}</strong>
-              <br />
-              Erfahrungspunkte
+              <div>
+                <h3>{rabbitFact.title}</h3>
+                <p>{rabbitFact.text}</p>
+              </div>
             </div>
-
-            <div className="info-tile">
-              <strong>{dailyPercent} %</strong>
-              <br />
-              Tagesfortschritt
-            </div>
-          </div>
+          </section>
 
           <section className="home-next-card">
             <div className="section-label">Nächstes Ziel</div>
