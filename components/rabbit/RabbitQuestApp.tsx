@@ -63,6 +63,9 @@ export function RabbitQuestApp({
   const activeFamily = initialFamily;
   const canUseParentArea =
     initialUserRoles.includes("parent") || initialUserRoles.includes("admin");
+  console.log("Kaninchen roles:", initialUserRoles);
+  console.log("Kaninchen active family:", initialFamily);
+  console.log("Kaninchen canUseParentArea:", canUseParentArea);
 
   const visibleTabs = topTabs.filter(
     (tab) => tab.view !== "parents" || canUseParentArea,
