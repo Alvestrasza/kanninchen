@@ -66,7 +66,7 @@ export function RabbitQuestApp({
   const percent =
     totalDailyTasks > 0 ? Math.round((completedDailyCount / totalDailyTasks) * 100) : 0;
   const litSegments = Math.round((percent / 100) * 15);
-  const isPrimaryView = view === "home" || view === "quests";
+  const isPrimaryView = view === "quests";
   const recentUnlocks = achievements.filter((achievement) =>
     recentUnlockIds.includes(achievement.id),
   );
