@@ -17,6 +17,7 @@ import {
 import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
+import type { RabbitFamilyMemberOverviewView } from "@/lib/rabbit/family-members";
 import type {
   RabbitCaretakerAssignmentView,
   RabbitCaretakerChildOption,
@@ -37,6 +38,7 @@ type SecondaryViewProps = {
   parentChildOptions: RabbitCaretakerChildOption[];
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
   userId: string;
+  initialFamilyMembers: RabbitFamilyMemberOverviewView[];
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -106,6 +108,28 @@ function formatBirthdayForInput(birthday: string | null): string {
   return birthday.slice(0, 10);
 }
 
+function formatDateTime(value: string | null): string {
+  if (!value) {
+    return "Noch keine Aktivität";
+  }
+
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function formatDate(value: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
 export function SecondaryView({
   view,
   userName,
@@ -116,6 +140,7 @@ export function SecondaryView({
   parentChildOptions,
   initialCaretakerAssignments,
   userId,
+  initialFamilyMembers,
   completedCount,
   totalTasks,
   totalXp,
@@ -825,6 +850,74 @@ export function SecondaryView({
               Hier siehst du, was die Kinder heute erledigt haben, die letzten Tage
               und den aktuellen Stand der Kaninchenprofile.
             </p>
+
+            <section className="family-members-section">
+              <h3>Familienmitglieder</h3>
+
+              {initialFamilyMembers.length > 0 ? (
+                <div className="family-member-grid">
+                  {initialFamilyMembers.map((member) => (
+                    <article className="family-member-card" key={member.id}>
+                      <div className="family-member-head">
+                        <div>
+                          <strong>{member.name}</strong>
+                          <small>{member.email ?? "Keine E-Mail hinterlegt"}</small>
+                        </div>
+
+                        <span className={`family-role-pill family-role-${member.role}`}>
+                          {member.role}
+                        </span>
+                      </div>
+
+                      <div className="family-member-progress">
+                        <div>
+                          <span>Heute</span>
+                          <strong>
+                            {member.todayCompleted} / {member.todayTotal}
+                          </strong>
+                        </div>
+
+                        <div className="parent-progress-track">
+                          <span style={{ width: `${member.todayPercent}%` }} />
+                        </div>
+
+                        <small>{member.todayPercent} % erledigt</small>
+                      </div>
+
+                      <div className="family-member-meta">
+                        <small>Mitglied seit {formatDate(member.memberSince)}</small>
+                        <small>Letzte Aktivität: {formatDateTime(member.lastActivityAt)}</small>
+                      </div>
+
+                      <div className="family-member-rabbits">
+                        <span>Zugeordnete Kaninchen:</span>
+
+                        {member.assignedRabbits.length > 0 ? (
+                          <div className="family-member-rabbit-list">
+                            {member.assignedRabbits.map((assignment) => (
+                              <span className="caretaker-chip readonly" key={assignment.rabbitId}>
+                                <strong>
+                                  {assignment.rabbitName}
+                                  {assignment.isPrimary ? " ⭐" : ""}
+                                </strong>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <small>Keine Kaninchen zugeordnet</small>
+                        )}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="info-tile">
+                  <strong>👨‍👧‍👦</strong>
+                  <br />
+                  Noch keine Familienmitglieder gefunden.
+                </div>
+              )}
+            </section>
 
             <div className="parent-dashboard-grid">
               <section className="parent-dashboard-card">

@@ -9,6 +9,10 @@ import {
   getVisibleRabbitCaretakerAssignments,
   type RabbitCaretakerChildOption,
 } from "@/lib/rabbit/caretaker-assignments";
+import {
+  getFamilyMemberOverview,
+  type RabbitFamilyMemberOverviewView,
+} from "@/lib/rabbit/family-members";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
 
 export default async function HomePage() {
@@ -33,18 +37,18 @@ export default async function HomePage() {
 
   let parentDashboard: ParentDashboardView | null = null;
   let parentChildOptions: RabbitCaretakerChildOption[] = [];
+  let familyMembers: RabbitFamilyMemberOverviewView[] = [];
 
   const caretakerAssignments = await getVisibleRabbitCaretakerAssignments(
     session.user.id,
     activeFamily.id,
   );
 
-  if (canUseParentArea) {
-    [parentDashboard, parentChildOptions] = await Promise.all([
-      getParentDashboard(activeFamily.id, session.user.id),
-      getFamilyChildOptions(session.user.id, activeFamily.id),
-    ]);
-  }
+  [parentDashboard, parentChildOptions, familyMembers] = await Promise.all([
+    getParentDashboard(activeFamily.id, session.user.id),
+    getFamilyChildOptions(session.user.id, activeFamily.id),
+    getFamilyMemberOverview(session.user.id, activeFamily.id),
+  ]);
 
   return (
     <RabbitQuestApp
@@ -61,6 +65,7 @@ export default async function HomePage() {
       initialParentDashboard={parentDashboard}
       initialParentChildOptions={parentChildOptions}
       initialCaretakerAssignments={caretakerAssignments}
+      initialFamilyMembers={familyMembers}
     />
   );
 }

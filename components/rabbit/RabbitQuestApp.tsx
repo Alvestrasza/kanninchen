@@ -31,6 +31,7 @@ import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { AppRole } from "@/lib/auth/roles";
 import type { RabbitFamilyView } from "@/lib/rabbit/families";
 import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
+import type { RabbitFamilyMemberOverviewView } from "@/lib/rabbit/family-members";
 import type {
   RabbitCaretakerAssignmentView,
   RabbitCaretakerChildOption,
@@ -55,6 +56,7 @@ type RabbitQuestAppProps = {
   initialParentChildOptions: RabbitCaretakerChildOption[];
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
   userId: string;
+  initialFamilyMembers: RabbitFamilyMemberOverviewView[];
 };
 
 export function RabbitQuestApp({
@@ -71,6 +73,7 @@ export function RabbitQuestApp({
   initialParentChildOptions,
   initialCaretakerAssignments,
   userId,
+  initialFamilyMembers,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const activeFamily = initialFamily;
@@ -394,6 +397,7 @@ const resetProgress = () => {
               parentChildOptions={initialParentChildOptions}
               initialCaretakerAssignments={initialCaretakerAssignments}
               userId={userId}
+              initialFamilyMembers={initialFamilyMembers}
               editingRabbit={editingRabbit}
               isRabbitModalOpen={isRabbitModalOpen}
               onCloseRabbitModal={closeRabbitModal}
