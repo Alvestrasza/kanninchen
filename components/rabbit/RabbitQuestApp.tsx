@@ -15,6 +15,7 @@ import { rabbitTasks } from "@/data/rabbit/tasks";
 import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { AppRole } from "@/lib/auth/roles";
+import type { RabbitFamilyView } from "@/lib/rabbit/families";
 import type {
   RabbitProfileCreateInput,
   RabbitProfileUpdateInput,
@@ -38,6 +39,7 @@ import { TopNavigation } from "@/components/rabbit/TopNavigation";
 type RabbitQuestAppProps = {
   userName: string;
   initialUserRoles: AppRole[];
+  initialFamily: RabbitFamilyView;
   initialActiveTaskId: string;
   initialProgress: TaskProgressState;
   initialStreakCount: number;
@@ -49,6 +51,7 @@ type RabbitQuestAppProps = {
 export function RabbitQuestApp({
   userName,
   initialUserRoles,
+  initialFamily,
   initialActiveTaskId,
   initialProgress,
   initialStreakCount,
@@ -57,6 +60,7 @@ export function RabbitQuestApp({
   initialRabbits,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
+  const activeFamily = initialFamily;
   const canUseParentArea =
     initialUserRoles.includes("parent") || initialUserRoles.includes("admin");
 
@@ -130,7 +134,7 @@ export function RabbitQuestApp({
 
     startTransition(async () => {
       try {
-        const result = await saveTaskProgressAction(taskId, nextSubtasks);
+        const result = await saveTaskProgressAction(activeFamily.id, taskId, nextSubtasks);
 
         setProgress(result.progress);
         setStreakCount(result.streakCount);
@@ -181,7 +185,7 @@ export function RabbitQuestApp({
 const resetProgress = () => {
   startTransition(async () => {
     try {
-      const result = await resetProgressAction();
+      const result = await resetProgressAction(activeFamily.id);
 
       setProgress(result.progress);
       setStreakCount(result.streakCount);
@@ -207,7 +211,7 @@ const resetProgress = () => {
 
     startTransition(async () => {
       try {
-        const result = await resetAllRabbitDataAction();
+        const result = await resetAllRabbitDataAction(activeFamily.id);
 
         setProgress(result.progress);
         setStreakCount(result.streakCount);
@@ -225,7 +229,7 @@ const resetProgress = () => {
   const createRabbitProfile = (input: RabbitProfileCreateInput) => {
     startTransition(async () => {
       try {
-        const nextRabbits = await createRabbitProfileAction(input);
+        const nextRabbits = await createRabbitProfileAction(activeFamily.id, input);
 
         setRabbits(nextRabbits);
         setIsRabbitModalOpen(false);
@@ -239,7 +243,7 @@ const resetProgress = () => {
   const updateRabbitProfile = (input: RabbitProfileUpdateInput) => {
     startTransition(async () => {
       try {
-        const nextRabbits = await updateRabbitProfileAction(input);
+        const nextRabbits = await updateRabbitProfileAction(activeFamily.id, input);
 
         setRabbits(nextRabbits);
         setEditingRabbit(null);
@@ -262,7 +266,7 @@ const resetProgress = () => {
 
     startTransition(async () => {
       try {
-        const nextRabbits = await deleteRabbitProfileAction(rabbit.id);
+        const nextRabbits = await deleteRabbitProfileAction(activeFamily.id, rabbit.id);
 
         setRabbits(nextRabbits);
         setMessage(`Kaninchenprofil „${rabbit.name}“ wurde gelöscht.`);
@@ -376,6 +380,7 @@ const resetProgress = () => {
           <SecondaryView
             view={view}
             userName={userName}
+            familyName={activeFamily.name}
             completedCount={completedDailyCount}
             totalTasks={totalDailyTasks}
             totalXp={totalXp}

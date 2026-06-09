@@ -30,11 +30,12 @@ async function requireUserId(): Promise<string> {
 }
 
 export async function saveTaskProgressAction(
+  familyId: string,
   taskId: string,
   subtasks: boolean[],
 ): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
-  const result = await upsertTaskProgress(userId, taskId, subtasks);
+  const result = await upsertTaskProgress(userId, familyId, taskId, subtasks);
   revalidatePath("/");
   return result;
 }
@@ -46,41 +47,46 @@ export async function setActiveTaskAction(taskId: string): Promise<string> {
   return activeTaskId;
 }
 
-export async function resetProgressAction(): Promise<ProgressUpdateResult> {
+export async function resetProgressAction(familyId: string): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
-  const result = await resetAllProgress(userId);
+  const result = await resetAllProgress(userId, familyId);
   revalidatePath("/");
   return result;
 }
 
-export async function resetAllRabbitDataAction(): Promise<ProgressUpdateResult> {
+export async function resetAllRabbitDataAction(familyId: string): Promise<ProgressUpdateResult> {
   const userId = await requireUserId();
-  const result = await resetAllUserRabbitData(userId);
+  const result = await resetAllUserRabbitData(userId, familyId);
   revalidatePath("/");
   return result;
 }
 
 export async function createRabbitProfileAction(
+  familyId: string,
   input: RabbitProfileCreateInput,
 ): Promise<RabbitProfileView[]> {
   const userId = await requireUserId();
-  const rabbits = await createUserRabbitProfile(userId, input);
+  const rabbits = await createUserRabbitProfile(userId, familyId, input);
   revalidatePath("/");
   return rabbits;
 }
 
 export async function updateRabbitProfileAction(
+  familyId: string,
   input: RabbitProfileUpdateInput,
 ): Promise<RabbitProfileView[]> {
   const userId = await requireUserId();
-  const rabbits = await updateUserRabbitProfile(userId, input);
+  const rabbits = await updateUserRabbitProfile(userId, familyId, input);
   revalidatePath("/");
   return rabbits;
 }
 
-export async function deleteRabbitProfileAction(rabbitId: string): Promise<RabbitProfileView[]> {
+export async function deleteRabbitProfileAction(
+  familyId: string,
+  rabbitId: string,
+): Promise<RabbitProfileView[]> {
   const userId = await requireUserId();
-  const rabbits = await deleteUserRabbitProfile(userId, rabbitId);
+  const rabbits = await deleteUserRabbitProfile(userId, familyId, rabbitId);
   revalidatePath("/");
   return rabbits;
 }

@@ -145,7 +145,10 @@ function normalizeSubtasks(value: unknown, length: number): boolean[] {
   return Array.from({ length }, (_, index) => Boolean(value[index]));
 }
 
-export async function getUserProgress(userId: string): Promise<UserProgressState> {
+export async function getUserProgress(
+  userId: string,
+  familyId: string,
+): Promise<UserProgressState> {
   const dateKey = getTodayDateKey();
   const [records, preference] = await Promise.all([
     prisma.rabbitTaskProgress.findMany({
@@ -208,7 +211,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
   const [streakCount, totalXp, rabbits] = await Promise.all([
     getUserStreak(userId),
     getUserTotalXp(userId),
-    getUserRabbitProfiles(userId),
+    getUserRabbitProfiles(userId, familyId),
   ]);
 
   const achievements = await getUserAchievementViews(userId, streakCount);
@@ -225,6 +228,7 @@ export async function getUserProgress(userId: string): Promise<UserProgressState
 
 export async function upsertTaskProgress(
   userId: string,
+  familyId: string,
   taskId: string,
   subtasks: boolean[],
 ): Promise<ProgressUpdateResult> {
@@ -288,7 +292,7 @@ export async function upsertTaskProgress(
     unlockedAchievementIds = await unlockEligibleAchievements(userId, streakCount);
   }
 
-  const state = await getUserProgress(userId);
+  const state = await getUserProgress(userId, familyId);
 
   return {
     progress: state.progress,
@@ -322,7 +326,10 @@ export async function setActiveTask(userId: string, activeTaskId: string): Promi
   return safeTaskId;
 }
 
-export async function resetAllProgress(userId: string): Promise<ProgressUpdateResult> {
+export async function resetAllProgress(
+  userId: string,
+  familyId: string,
+): Promise<ProgressUpdateResult> {
   const dateKey = getTodayDateKey();
 
   await prisma.rabbitTaskProgress.deleteMany({
@@ -332,7 +339,7 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
     },
   });
 
-  const state = await getUserProgress(userId);
+  const state = await getUserProgress(userId, familyId);
 
   return {
     progress: state.progress,
@@ -345,7 +352,10 @@ export async function resetAllProgress(userId: string): Promise<ProgressUpdateRe
   };
 }
 
-export async function resetAllUserRabbitData(userId: string): Promise<ProgressUpdateResult> {
+export async function resetAllUserRabbitData(
+  userId: string,
+  familyId: string,
+): Promise<ProgressUpdateResult> {
   const dateKey = getTodayDateKey();
 
   await prisma.$transaction([
@@ -380,7 +390,7 @@ export async function resetAllUserRabbitData(userId: string): Promise<ProgressUp
     }),
   ]);
 
-  const state = await getUserProgress(userId);
+  const state = await getUserProgress(userId, familyId);
 
   return {
     progress: state.progress,

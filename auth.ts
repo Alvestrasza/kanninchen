@@ -7,7 +7,10 @@
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { resolveAppRolesFromTokens } from "@/lib/auth/roles";
+import {
+  resolveAppRolesFromTokens,
+  resolveFamilyKeyFromTokens,
+} from "@/lib/auth/roles";
 import { prisma } from "@/lib/db/prisma";
 
 function requiredEnv(name: string): string {
@@ -47,14 +50,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           },
         });
 
-        const roles = resolveAppRolesFromTokens({
+        const tokenContext = {
           idToken: account?.id_token,
           accessToken: account?.access_token,
           clientId: process.env.AUTH_KEYCLOAK_ID,
-        });
+        };
+
+        const roles = resolveAppRolesFromTokens(tokenContext);
+        const familyKey = resolveFamilyKeyFromTokens(tokenContext);
 
         session.user.id = user.id;
         session.user.roles = roles;
+        session.user.familyKey = familyKey;
         session.user.isChild = roles.includes("child");
         session.user.isParent = roles.includes("parent");
         session.user.isAdmin = roles.includes("admin");

@@ -21,6 +21,7 @@ import type {
 type SecondaryViewProps = {
   view: RabbitView;
   userName: string;
+  familyName: string;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -93,6 +94,7 @@ function formatBirthdayForInput(birthday: string | null): string {
 export function SecondaryView({
   view,
   userName,
+  familyName,
   completedCount,
   totalTasks,
   totalXp,
@@ -320,8 +322,8 @@ export function SecondaryView({
         <h2>Kaninchen</h2>
 
         <p>
-          Hier findest du die Kaninchen, die betreut werden. Über den Button
-          oben rechts kannst du ein neues Kaninchenprofil hinzufügen.
+          Hier findest du die Kaninchen der Familie <strong>{familyName}</strong>.
+          Über den Button oben rechts kannst du ein neues Kaninchenprofil hinzufügen.
         </p>
 
         {rabbits.length > 0 ? (

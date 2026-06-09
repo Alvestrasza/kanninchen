@@ -27,10 +27,29 @@ export type RabbitProfileUpdateInput = RabbitProfileCreateInput & {
   id: string;
 };
 
-export async function getUserRabbitProfiles(userId: string): Promise<RabbitProfileView[]> {
+export async function getUserRabbitProfiles(
+  userId: string,
+  familyId: string,
+): Promise<RabbitProfileView[]> {
+  const membership = await prisma.rabbitFamilyMembership.findUnique({
+    where: {
+      familyId_userId: {
+        familyId,
+        userId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!membership) {
+    return [];
+  }
+
   const profiles = await prisma.rabbitProfile.findMany({
     where: {
-      userId,
+      familyId,
     },
     orderBy: {
       name: "asc",
@@ -61,6 +80,7 @@ function parseOptionalBirthday(birthday?: string): Date | null {
 
 export async function createUserRabbitProfile(
   userId: string,
+  familyId: string,
   input: RabbitProfileCreateInput,
 ): Promise<RabbitProfileView[]> {
   const name = input.name.trim();
@@ -74,9 +94,26 @@ export async function createUserRabbitProfile(
   const notes = input.notes?.trim() || null;
   const birthday = parseOptionalBirthday(input.birthday);
 
+  const membership = await prisma.rabbitFamilyMembership.findUnique({
+    where: {
+      familyId_userId: {
+        familyId,
+        userId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!membership) {
+    throw new Error("User is not a member of this rabbit family.");
+  }
+
   await prisma.rabbitProfile.create({
     data: {
       userId,
+      familyId,
       name,
       breed,
       color,
@@ -85,11 +122,12 @@ export async function createUserRabbitProfile(
     },
   });
 
-  return getUserRabbitProfiles(userId);
+  return getUserRabbitProfiles(userId, familyId);
 }
 
 export async function updateUserRabbitProfile(
   userId: string,
+  familyId: string,
   input: RabbitProfileUpdateInput,
 ): Promise<RabbitProfileView[]> {
   const name = input.name.trim();
@@ -106,7 +144,7 @@ export async function updateUserRabbitProfile(
   await prisma.rabbitProfile.update({
     where: {
       id: input.id,
-      userId,
+      familyId,
     },
     data: {
       name,
@@ -117,19 +155,20 @@ export async function updateUserRabbitProfile(
     },
   });
 
-  return getUserRabbitProfiles(userId);
+  return getUserRabbitProfiles(userId, familyId);
 }
 
 export async function deleteUserRabbitProfile(
   userId: string,
+  familyId: string,
   rabbitId: string,
 ): Promise<RabbitProfileView[]> {
   await prisma.rabbitProfile.delete({
     where: {
       id: rabbitId,
-      userId,
+      familyId,
     },
   });
 
-  return getUserRabbitProfiles(userId);
+  return getUserRabbitProfiles(userId, familyId);
 }

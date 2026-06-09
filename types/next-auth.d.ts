@@ -13,6 +13,7 @@ declare module "next-auth" {
     user: {
       id: string;
       roles: AppRole[];
+      familyKey: string | null;
       isChild: boolean;
       isParent: boolean;
       isAdmin: boolean;

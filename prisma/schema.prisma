@@ -25,6 +25,7 @@ model User {
   taskProgress  RabbitTaskProgress[]
   journalEntries RabbitJournalEntry[]
   rabbits       RabbitProfile[]
+  familyMemberships RabbitFamilyMembership[]
   preferences   RabbitUserPreference?
   xpEvents      RabbitXpEvent[]
   achievementUnlocks RabbitAchievementUnlock[]
@@ -120,6 +121,7 @@ model RabbitJournalEntry {
 model RabbitProfile {
   id        String   @id @default(cuid())
   userId    String
+  familyId  String
   name      String
   breed     String?
   color     String?
@@ -128,9 +130,11 @@ model RabbitProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family RabbitFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@index([userId, name])
+  @@index([familyId, name])
 }
 
 model RabbitUserPreference {
@@ -178,4 +182,34 @@ model RabbitAchievementUnlock {
 
   @@unique([userId, achievementId])
   @@index([userId, unlockedAt])
+}
+
+model RabbitFamily {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships RabbitFamilyMembership[]
+  rabbits     RabbitProfile[]
+
+  @@index([name])
+}
+
+model RabbitFamilyMembership {
+  id        String   @id @default(cuid())
+  familyId  String
+  userId    String
+  role      String   @default("child")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  family RabbitFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, userId])
+  @@index([userId])
+  @@index([familyId, role])
 }

@@ -7,6 +7,7 @@
 export type AppRole = "child" | "parent" | "admin" | "tester";
 
 type JwtPayload = {
+  family_key?: string;
   realm_access?: {
     roles?: string[];
   };
@@ -119,4 +120,14 @@ export function resolveAppRolesFromTokens({
 
 export function hasAnyAppRole(roles: AppRole[], allowedRoles: AppRole[]): boolean {
   return allowedRoles.some((role) => roles.includes(role));
+}
+
+export function resolveFamilyKeyFromTokens({
+  idToken,
+  accessToken,
+}: ResolveAppRolesInput): string | null {
+  const idPayload = decodeJwtPayload(idToken);
+  const accessPayload = decodeJwtPayload(accessToken);
+
+  return idPayload?.family_key ?? accessPayload?.family_key ?? null;
 }
