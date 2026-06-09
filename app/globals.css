@@ -1928,3 +1928,135 @@ a {
   color: var(--muted);
   line-height: 1.45;
 }
+
+.settings-section {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(0, 191, 255, 0.22);
+}
+
+.settings-section p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.parent-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.parent-dashboard-card {
+  padding: 1rem;
+  border: 1px solid rgba(0, 191, 255, 0.24);
+  border-radius: 0.35rem;
+  background: rgba(4, 28, 44, 0.68);
+  box-shadow: inset 0 0 1.2rem rgba(0, 143, 255, 0.08);
+}
+
+.parent-dashboard-card h3 {
+  margin: 0 0 0.8rem;
+  color: #a6e8ff;
+}
+
+.parent-dashboard-wide {
+  grid-column: 1 / -1;
+}
+
+.parent-child-list,
+.parent-history-list,
+.parent-rabbit-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.parent-child-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(0, 191, 255, 0.18);
+  border-radius: 0.3rem;
+  background: rgba(1, 18, 30, 0.42);
+}
+
+.parent-child-card strong,
+.parent-rabbit-card strong {
+  color: #e7fbff;
+}
+
+.parent-child-card small,
+.parent-rabbit-card small {
+  display: block;
+  color: var(--muted);
+}
+
+.parent-progress-value {
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.parent-progress-track {
+  height: 0.55rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 191, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.parent-progress-track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #3cc5ff, #8ee760);
+}
+
+.parent-history-row {
+  display: grid;
+  grid-template-columns: 7rem 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(0, 191, 255, 0.14);
+  border-radius: 0.28rem;
+  background: rgba(1, 18, 30, 0.34);
+}
+
+.parent-history-row span {
+  color: var(--muted);
+}
+
+.parent-rabbit-grid {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.parent-rabbit-card {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(0, 191, 255, 0.18);
+  border-radius: 0.3rem;
+  background: rgba(1, 18, 30, 0.42);
+}
+
+.parent-rabbit-card p {
+  margin: 0.45rem 0 0;
+  color: #a7ddf4;
+}
+
+@media (max-width: 720px) {
+  .parent-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-history-row {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .parent-rabbit-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+  }
+}

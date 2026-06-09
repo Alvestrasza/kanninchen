@@ -8,10 +8,11 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
-import { rabbitFacts } from "@/data/rabbit/facts";
-import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
+import { rabbitFacts } from "@/data/rabbit/facts";
+import type { RabbitView } from "@/components/rabbit/rabbit-navigation";
+import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
+import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
 import type {
   RabbitProfileCreateInput,
   RabbitProfileUpdateInput,
@@ -28,6 +29,7 @@ type SecondaryViewProps = {
   totalXp: number;
   achievements: RabbitAchievementView[];
   rabbits: RabbitProfileView[];
+  parentDashboard: ParentDashboardView | null;
   editingRabbit: RabbitProfileView | null;
   isRabbitModalOpen: boolean;
   onCloseRabbitModal: () => void;
@@ -102,6 +104,7 @@ export function SecondaryView({
   totalXp,
   achievements,
   rabbits,
+  parentDashboard,
   editingRabbit,
   isRabbitModalOpen,
   onCloseRabbitModal,
@@ -649,33 +652,103 @@ export function SecondaryView({
           </button>
         </div>
 
-        {canUseParentArea && (
+        {canUseParentArea && parentDashboard && (
           <section className="settings-section">
             <div className="section-label">Elternbereich</div>
 
             <p>
-              Dieser Bereich wird die Übersicht für Eltern. Hier sollen später Tagesfortschritt,
-              Historie, Erfolge und wichtige Beobachtungen der zugeordneten Kinder sichtbar werden.
+              Familienübersicht für <strong>{parentDashboard.family.name}</strong>.
+              Hier siehst du, was die Kinder heute erledigt haben, die letzten Tage
+              und den aktuellen Stand der Kaninchenprofile.
             </p>
 
-            <div className="parent-dashboard-placeholder">
-              <div className="info-tile">
-                <strong>🔐</strong>
-                <br />
-                Rollenprüfung aktiv
-              </div>
+            <div className="parent-dashboard-grid">
+              <section className="parent-dashboard-card">
+                <h3>Heute</h3>
 
-              <div className="info-tile">
-                <strong>📋</strong>
-                <br />
-                Historie folgt
-              </div>
+                {parentDashboard.children.length > 0 ? (
+                  <div className="parent-child-list">
+                    {parentDashboard.children.map((child) => (
+                      <article className="parent-child-card" key={child.id}>
+                        <div>
+                          <strong>{child.name}</strong>
+                          <small>{child.email ?? "Keine E-Mail hinterlegt"}</small>
+                        </div>
 
-              <div className="info-tile">
-                <strong>👨‍👧</strong>
-                <br />
-                Eltern-Kind-Zuordnung folgt
-              </div>
+                        <div className="parent-progress-value">
+                          {child.todayCompleted} / {child.todayTotal}
+                        </div>
+
+                        <div className="parent-progress-track">
+                          <span style={{ width: `${child.todayPercent}%` }} />
+                        </div>
+
+                        <small>{child.todayPercent} % erledigt</small>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="info-tile">
+                    <strong>👨‍👧</strong>
+                    <br />
+                    Noch keine Kinder in dieser Familie.
+                  </div>
+                )}
+              </section>
+
+              <section className="parent-dashboard-card">
+                <h3>Historie</h3>
+
+                {parentDashboard.history.length > 0 ? (
+                  <div className="parent-history-list">
+                    {parentDashboard.history.slice(0, 28).map((entry) => (
+                      <article
+                        className="parent-history-row"
+                        key={`${entry.dateKey}-${entry.childId}`}
+                      >
+                        <span>{entry.dateKey}</span>
+                        <strong>{entry.childName}</strong>
+                        <span>
+                          {entry.completed} / {entry.total}
+                        </span>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="info-tile">
+                    <strong>📋</strong>
+                    <br />
+                    Noch keine Historie vorhanden.
+                  </div>
+                )}
+              </section>
+
+              <section className="parent-dashboard-card parent-dashboard-wide">
+                <h3>Kaninchenzustand</h3>
+
+                {parentDashboard.rabbits.length > 0 ? (
+                  <div className="parent-rabbit-grid">
+                    {parentDashboard.rabbits.map((rabbit) => (
+                      <article className="parent-rabbit-card" key={rabbit.id}>
+                        <div className="rabbit-avatar">🐰</div>
+
+                        <div>
+                          <strong>{rabbit.name}</strong>
+                          <small>{rabbit.breed ?? "Rasse nicht hinterlegt"}</small>
+                          <small>{rabbit.color ?? "Farbe nicht hinterlegt"}</small>
+                          {rabbit.notes && <p>{rabbit.notes}</p>}
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="info-tile">
+                    <strong>🐇</strong>
+                    <br />
+                    Noch keine Kaninchenprofile angelegt.
+                  </div>
+                )}
+              </section>
             </div>
           </section>
         )}

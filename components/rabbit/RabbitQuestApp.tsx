@@ -16,6 +16,7 @@ import type { TaskProgressState } from "@/lib/rabbit/progress";
 import type { RabbitAchievementView } from "@/lib/rabbit/achievements";
 import type { AppRole } from "@/lib/auth/roles";
 import type { RabbitFamilyView } from "@/lib/rabbit/families";
+import type { ParentDashboardView } from "@/lib/rabbit/parent-dashboard";
 import type {
   RabbitProfileCreateInput,
   RabbitProfileUpdateInput,
@@ -46,6 +47,7 @@ type RabbitQuestAppProps = {
   initialTotalXp: number;
   initialAchievements: RabbitAchievementView[];
   initialRabbits: RabbitProfileView[];
+  initialParentDashboard: ParentDashboardView | null;
 };
 
 export function RabbitQuestApp({
@@ -58,6 +60,7 @@ export function RabbitQuestApp({
   initialTotalXp,
   initialAchievements,
   initialRabbits,
+  initialParentDashboard,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const activeFamily = initialFamily;
@@ -376,6 +379,7 @@ const resetProgress = () => {
               totalXp={totalXp}
               achievements={achievements}
               rabbits={rabbits}
+              parentDashboard={initialParentDashboard}
               editingRabbit={editingRabbit}
               isRabbitModalOpen={isRabbitModalOpen}
               onCloseRabbitModal={closeRabbitModal}

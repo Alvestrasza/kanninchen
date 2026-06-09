@@ -3,6 +3,7 @@ import { LoginShell } from "@/components/auth/LoginShell";
 import { RabbitQuestApp } from "@/components/rabbit/RabbitQuestApp";
 import { getActiveUserFamily } from "@/lib/rabbit/families";
 import { getUserProgress } from "@/lib/rabbit/progress";
+import { getParentDashboard } from "@/lib/rabbit/parent-dashboard";
 
 export default async function HomePage() {
   const session = await auth();
@@ -19,7 +20,14 @@ export default async function HomePage() {
     familyKey: session.user.familyKey,
   });
 
-const state = await getUserProgress(session.user.id, activeFamily.id);
+  const state = await getUserProgress(session.user.id, activeFamily.id);
+
+  const canUseParentArea =
+    session.user.roles?.includes("parent") || session.user.roles?.includes("admin");
+
+  const parentDashboard = canUseParentArea
+    ? await getParentDashboard(activeFamily.id, session.user.id)
+    : null;
 
   return (
     <RabbitQuestApp
@@ -32,6 +40,7 @@ const state = await getUserProgress(session.user.id, activeFamily.id);
       initialTotalXp={state.totalXp}
       initialAchievements={state.achievements}
       initialRabbits={state.rabbits}
+      initialParentDashboard={parentDashboard}
     />
   );
 }
