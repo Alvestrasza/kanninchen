@@ -11,7 +11,6 @@ export type RabbitView =
   | "rabbits"
   | "achievements"
   | "lexicon"
-  | "parents"
   | "settings";
 
 export const topTabs: Array<{ view: RabbitView; label: string }> = [
@@ -21,6 +20,5 @@ export const topTabs: Array<{ view: RabbitView; label: string }> = [
   { view: "rabbits", label: "Kaninchen" },
   { view: "achievements", label: "Erfolge" },
   { view: "lexicon", label: "Lexikon" },
-  { view: "parents", label: "Eltern" },
   { view: "settings", label: "Einstellungen" },
 ];

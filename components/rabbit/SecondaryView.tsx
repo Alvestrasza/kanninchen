@@ -22,6 +22,7 @@ type SecondaryViewProps = {
   view: RabbitView;
   userName: string;
   familyName: string;
+  canUseParentArea: boolean;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -95,6 +96,7 @@ export function SecondaryView({
   view,
   userName,
   familyName,
+  canUseParentArea,
   completedCount,
   totalTasks,
   totalXp,
@@ -613,47 +615,14 @@ export function SecondaryView({
     );
   }
 
-  if (view === "parents") {
-    return (
-      <>
-        <h2>Eltern</h2>
-
-        <p>
-          Dieser Bereich wird die Übersicht für Eltern. Hier sollen später Tagesfortschritt,
-          Historie, Erfolge und wichtige Beobachtungen der zugeordneten Kinder sichtbar werden.
-        </p>
-
-        <div className="parent-dashboard-placeholder">
-          <div className="info-tile">
-            <strong>🔐</strong>
-            <br />
-            Rollenprüfung aktiv
-          </div>
-
-          <div className="info-tile">
-            <strong>📋</strong>
-            <br />
-            Historie folgt
-          </div>
-
-          <div className="info-tile">
-            <strong>👨‍👧</strong>
-            <br />
-            Eltern-Kind-Zuordnung folgt
-          </div>
-        </div>
-      </>
-    );
-  }
-
   if (view === "settings") {
     return (
       <>
         <h2>Einstellungen</h2>
 
         <p>
-          Der Fortschritt wird pro Benutzer in der Datenbank gespeichert.
-          Der vollständige Reset ist nur für die Testphase gedacht.
+          Hier findest du Einstellungen, Testfunktionen und später die Verwaltung für Eltern
+          und Administratoren.
         </p>
 
         <div className="mobile-grid">
@@ -679,6 +648,56 @@ export function SecondaryView({
             Test-Reset: Aufgaben, XP und Erfolge löschen
           </button>
         </div>
+
+        {canUseParentArea && (
+          <section className="settings-section">
+            <div className="section-label">Elternbereich</div>
+
+            <p>
+              Dieser Bereich wird die Übersicht für Eltern. Hier sollen später Tagesfortschritt,
+              Historie, Erfolge und wichtige Beobachtungen der zugeordneten Kinder sichtbar werden.
+            </p>
+
+            <div className="parent-dashboard-placeholder">
+              <div className="info-tile">
+                <strong>🔐</strong>
+                <br />
+                Rollenprüfung aktiv
+              </div>
+
+              <div className="info-tile">
+                <strong>📋</strong>
+                <br />
+                Historie folgt
+              </div>
+
+              <div className="info-tile">
+                <strong>👨‍👧</strong>
+                <br />
+                Eltern-Kind-Zuordnung folgt
+              </div>
+            </div>
+          </section>
+        )}
+
+        {canUseParentArea && (
+          <section className="settings-section">
+            <div className="section-label">Administration</div>
+
+            <p>
+              Der Admin-Bereich kann hier später ergänzt werden, ohne die Hauptnavigation zu
+              überladen.
+            </p>
+
+            <div className="mobile-grid">
+              <div className="info-tile">
+                <strong>🛠️</strong>
+                <br />
+                Admin-Werkzeuge folgen
+              </div>
+            </div>
+          </section>
+        )}
       </>
     );
   }

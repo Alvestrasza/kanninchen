@@ -63,13 +63,6 @@ export function RabbitQuestApp({
   const activeFamily = initialFamily;
   const canUseParentArea =
     initialUserRoles.includes("parent") || initialUserRoles.includes("admin");
-  console.log("Kaninchen roles:", initialUserRoles);
-  console.log("Kaninchen active family:", initialFamily);
-  console.log("Kaninchen canUseParentArea:", canUseParentArea);
-
-  const visibleTabs = topTabs.filter(
-    (tab) => tab.view !== "parents" || canUseParentArea,
-  ); 
   const [activeTaskId, setActiveTaskId] = useState(initialTaskExists ? initialActiveTaskId : "feed");
   const [progress, setProgress] = useState<TaskProgressState>(initialProgress);
   const [streakCount, setStreakCount] = useState(initialStreakCount);
@@ -295,12 +288,6 @@ const resetProgress = () => {
   };  
 
   const setCurrentView = (nextView: RabbitView) => {
-    if (nextView === "parents" && !canUseParentArea) {
-      setView("home");
-      setMessage("Der Elternbereich ist für diesen Benutzer nicht freigeschaltet.");
-      return;
-    }
-
     setView(nextView);
   };
 
@@ -310,7 +297,6 @@ const resetProgress = () => {
 
         <TopNavigation
           view={view}
-          visibleTabs={visibleTabs}
           onChangeView={setCurrentView}
         />
 
@@ -380,25 +366,26 @@ const resetProgress = () => {
             exit={{ opacity: 0, y: -10, scale: 0.99 }}
             transition={{ duration: 0.24 }}
           >
-          <SecondaryView
-            view={view}
-            userName={userName}
-            familyName={activeFamily.name}
-            completedCount={completedDailyCount}
-            totalTasks={totalDailyTasks}
-            totalXp={totalXp}
-            achievements={achievements}
-            rabbits={rabbits}
-            editingRabbit={editingRabbit}
-            isRabbitModalOpen={isRabbitModalOpen}
-            onCloseRabbitModal={closeRabbitModal}
-            onCreateRabbit={createRabbitProfile}
-            onUpdateRabbit={updateRabbitProfile}
-            onEditRabbit={openEditRabbitModal}
-            onDeleteRabbit={deleteRabbitProfile}
-            onReset={resetProgress}
-            onResetAll={resetAllRabbitData}
-          />
+            <SecondaryView
+              view={view}
+              userName={userName}
+              familyName={activeFamily.name}
+              canUseParentArea={canUseParentArea}
+              completedCount={completedDailyCount}
+              totalTasks={totalDailyTasks}
+              totalXp={totalXp}
+              achievements={achievements}
+              rabbits={rabbits}
+              editingRabbit={editingRabbit}
+              isRabbitModalOpen={isRabbitModalOpen}
+              onCloseRabbitModal={closeRabbitModal}
+              onCreateRabbit={createRabbitProfile}
+              onUpdateRabbit={updateRabbitProfile}
+              onEditRabbit={openEditRabbitModal}
+              onDeleteRabbit={deleteRabbitProfile}
+              onReset={resetProgress}
+              onResetAll={resetAllRabbitData}
+            />
           </motion.section>
         )}
       </AnimatePresence>
