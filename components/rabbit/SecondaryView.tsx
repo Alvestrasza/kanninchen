@@ -36,6 +36,7 @@ type SecondaryViewProps = {
   parentDashboard: ParentDashboardView | null;
   parentChildOptions: RabbitCaretakerChildOption[];
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
+  userId: string;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -114,6 +115,7 @@ export function SecondaryView({
   parentDashboard,
   parentChildOptions,
   initialCaretakerAssignments,
+  userId,
   completedCount,
   totalTasks,
   totalXp,
@@ -183,6 +185,25 @@ export function SecondaryView({
 
     return byRabbitId;
   }, [caretakerAssignments]);
+
+  const myAssignedRabbitIds = useMemo(() => {
+    return new Set(
+      caretakerAssignments
+        .filter((assignment) => assignment.userId === userId)
+        .map((assignment) => assignment.rabbitId),
+    );
+  }, [caretakerAssignments, userId]);
+
+  const myAssignedRabbits = useMemo(() => {
+    return rabbits.filter((rabbit) => myAssignedRabbitIds.has(rabbit.id));
+  }, [rabbits, myAssignedRabbitIds]);
+
+  const rabbitsWithoutPrimaryCaretaker = useMemo(() => {
+    return rabbits.filter((rabbit) => {
+      const assignments = caretakerAssignmentsByRabbitId.get(rabbit.id) ?? [];
+      return !assignments.some((assignment) => assignment.isPrimary);
+    });
+  }, [rabbits, caretakerAssignmentsByRabbitId]);
 
   const assignCaretaker = () => {
     if (!selectedRabbitId || !selectedChildId) {
@@ -332,6 +353,49 @@ export function SecondaryView({
             </div>
           </motion.article>
 
+          <section className="home-assignment-card home-wide">
+            <div className="section-label">Meine Kaninchen</div>
+
+            {myAssignedRabbits.length > 0 ? (
+              <div className="home-badge-row">
+                {myAssignedRabbits.map((rabbit) => (
+                  <div className="home-badge" key={rabbit.id} title={rabbit.name}>
+                    <span>🐰</span>
+                    <small>{rabbit.name}</small>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <article className="achievement-mini-card">
+                <span>🐇</span>
+
+                <div>
+                  <strong>Noch kein Kaninchen zugewiesen</strong>
+                  <small>Ein Elternteil kann dir im Elternbereich ein Kaninchen zuordnen.</small>
+                </div>
+              </article>
+            )}
+          </section>
+
+          <section className="home-assignment-card home-wide">
+            <div className="section-label">Familienzuständigkeit</div>
+
+            <article className="achievement-mini-card">
+              <span>🐰</span>
+
+              <div>
+                <strong>
+                  {rabbits.length - rabbitsWithoutPrimaryCaretaker.length} / {rabbits.length} Kaninchen mit Hauptzuständigkeit
+                </strong>
+                <small>
+                  {rabbitsWithoutPrimaryCaretaker.length === 0
+                    ? "Alle Kaninchen haben einen Hauptverantwortlichen."
+                    : `${rabbitsWithoutPrimaryCaretaker.length} Kaninchen brauchen noch eine Hauptzuordnung.`}
+                </small>
+              </div>
+            </article>
+          </section>
+
           <section className="home-fact-card home-wide">
             <div className="section-label">Wusstest du schon?</div>
 
@@ -459,6 +523,26 @@ export function SecondaryView({
                 </dl>
 
                 {rabbit.notes && <p className="rabbit-profile-notes">{rabbit.notes}</p>}
+                <div className="caretaker-list">
+                  <span>Zuständig:</span>
+
+                  {(() => {
+                    const assignments = caretakerAssignmentsByRabbitId.get(rabbit.id) ?? [];
+
+                    if (assignments.length === 0) {
+                      return <small>Noch nicht zugewiesen</small>;
+                    }
+
+                    return assignments.map((assignment) => (
+                      <div className="caretaker-chip readonly" key={assignment.id}>
+                        <strong>
+                          {assignment.userName}
+                          {assignment.isPrimary ? " ⭐" : ""}
+                        </strong>
+                      </div>
+                    ));
+                  })()}
+                </div>
               </motion.article>
             ))}
           </div>

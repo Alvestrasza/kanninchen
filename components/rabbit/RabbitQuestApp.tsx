@@ -54,6 +54,7 @@ type RabbitQuestAppProps = {
   initialParentDashboard: ParentDashboardView | null;
   initialParentChildOptions: RabbitCaretakerChildOption[];
   initialCaretakerAssignments: RabbitCaretakerAssignmentView[];
+  userId: string;
 };
 
 export function RabbitQuestApp({
@@ -69,6 +70,7 @@ export function RabbitQuestApp({
   initialParentDashboard,
   initialParentChildOptions,
   initialCaretakerAssignments,
+  userId,
 }: RabbitQuestAppProps) {
   const initialTaskExists = rabbitTasks.some((task) => task.id === initialActiveTaskId);
   const activeFamily = initialFamily;
@@ -391,6 +393,7 @@ const resetProgress = () => {
               parentDashboard={initialParentDashboard}
               parentChildOptions={initialParentChildOptions}
               initialCaretakerAssignments={initialCaretakerAssignments}
+              userId={userId}
               editingRabbit={editingRabbit}
               isRabbitModalOpen={isRabbitModalOpen}
               onCloseRabbitModal={closeRabbitModal}

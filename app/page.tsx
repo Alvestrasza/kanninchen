@@ -7,6 +7,7 @@ import { getParentDashboard } from "@/lib/rabbit/parent-dashboard";
 import {
   getFamilyChildOptions,
   getRabbitCaretakerAssignments,
+  getVisibleRabbitCaretakerAssignments,
   type RabbitCaretakerAssignmentView,
   type RabbitCaretakerChildOption,
 } from "@/lib/rabbit/caretaker-assignments";
@@ -36,6 +37,11 @@ export default async function HomePage() {
   let parentChildOptions: RabbitCaretakerChildOption[] = [];
   let parentCaretakerAssignments: RabbitCaretakerAssignmentView[] = [];
 
+  const caretakerAssignments = await getVisibleRabbitCaretakerAssignments(
+    session.user.id,
+    activeFamily.id,
+  );
+
   if (canUseParentArea) {
     [parentDashboard, parentChildOptions, parentCaretakerAssignments] = await Promise.all([
       getParentDashboard(activeFamily.id, session.user.id),
@@ -55,9 +61,10 @@ export default async function HomePage() {
       initialTotalXp={state.totalXp}
       initialAchievements={state.achievements}
       initialRabbits={state.rabbits}
+      userId={session.user.id}
       initialParentDashboard={parentDashboard}
       initialParentChildOptions={parentChildOptions}
-      initialCaretakerAssignments={parentCaretakerAssignments}
+      initialCaretakerAssignments={caretakerAssignments}
     />
   );
 }

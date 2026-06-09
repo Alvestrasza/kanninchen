@@ -219,3 +219,59 @@ export async function removeRabbitCaretakerAssignment(
 
   return getRabbitCaretakerAssignments(viewerUserId, familyId);
 }
+
+export async function getVisibleRabbitCaretakerAssignments(
+  viewerUserId: string,
+  familyId: string,
+): Promise<RabbitCaretakerAssignmentView[]> {
+  const membership = await prisma.rabbitFamilyMembership.findUnique({
+    where: {
+      familyId_userId: {
+        familyId,
+        userId: viewerUserId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!membership) {
+    throw new Error("User is not a member of this rabbit family.");
+  }
+
+  const assignments = await prisma.rabbitCaretakerAssignment.findMany({
+    where: {
+      familyId,
+    },
+    orderBy: [
+      {
+        isPrimary: "desc",
+      },
+      {
+        createdAt: "asc",
+      },
+    ],
+    select: {
+      id: true,
+      rabbitId: true,
+      userId: true,
+      isPrimary: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return assignments.map((assignment) => ({
+    id: assignment.id,
+    rabbitId: assignment.rabbitId,
+    userId: assignment.userId,
+    userName: assignment.user.name ?? assignment.user.email ?? "Unbenanntes Kind",
+    userEmail: assignment.user.email,
+    isPrimary: assignment.isPrimary,
+  }));
+}
