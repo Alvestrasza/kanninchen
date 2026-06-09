@@ -50,7 +50,7 @@ export function RabbitQuestApp({
   const [totalXp, setTotalXp] = useState(initialTotalXp);
   const [achievements, setAchievements] = useState(initialAchievements);
   const [recentUnlockIds, setRecentUnlockIds] = useState<string[]>([]);
-  const [view, setView] = useState<RabbitView>("quests");
+  const [view, setView] = useState<RabbitView>("home");
   const [message, setMessage] = useState("Fortschritt wird sicher gespeichert.");
   const [isPending, startTransition] = useTransition();
 
@@ -252,6 +252,7 @@ const resetProgress = () => {
           >
           <SecondaryView
             view={view}
+            userName={userName}
             completedCount={completedDailyCount}
             totalTasks={totalDailyTasks}
             totalXp={totalXp}

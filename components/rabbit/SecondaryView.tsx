@@ -14,6 +14,7 @@ import { getCaretakerLevelInfo } from "@/lib/rabbit/level";
 
 type SecondaryViewProps = {
   view: RabbitView;
+  userName: string;
   completedCount: number;
   totalTasks: number;
   totalXp: number;
@@ -78,6 +79,7 @@ const rabbitProfilePlaceholders = [
 
 export function SecondaryView({
   view,
+  userName,
   completedCount,
   totalTasks,
   totalXp,
@@ -86,22 +88,32 @@ export function SecondaryView({
   onResetAll,
 }: SecondaryViewProps) {
   const levelInfo = getCaretakerLevelInfo(totalXp);
-  const unlockedCount = achievements.filter((achievement) => achievement.unlocked).length;
+  const unlockedAchievements = achievements.filter((achievement) => achievement.unlocked);
+  const unlockedCount = unlockedAchievements.length;
+  const latestAchievements = unlockedAchievements.slice(-5).reverse();
   const nextAchievement = achievements
     .filter((achievement) => !achievement.unlocked)
     .sort((left, right) => right.percent - left.percent)[0];
 
+  const dailyPercent = Math.round((completedCount / Math.max(1, totalTasks)) * 100);
+
+  const homeStatusText =
+    completedCount === 0
+      ? "Heute ist noch alles offen. Ein kleiner Anfang reicht schon — such dir die erste Aufgabe aus."
+      : completedCount >= totalTasks
+        ? "Alle Tagesaufgaben sind erledigt. Deine Kaninchen sind heute gut versorgt."
+        : "Ein Teil ist schon geschafft. Bleib ruhig dran, Schritt für Schritt wird der Tag vollständig.";
+
   if (view === "home") {
     return (
       <>
-        <h2>Home</h2>
+        <section className="home-welcome">
+          <span className="home-kicker">Willkommen zurück</span>
+          <h2>Hallo, {userName}</h2>
+          <p>{homeStatusText}</p>
+        </section>
 
-        <p>
-          Willkommen zurück. Hier siehst du auf einen Blick, wie deine Pflege heute läuft und
-          was du schon erreicht hast.
-        </p>
-
-        <div className="home-dashboard">
+        <div className="home-dashboard home-dashboard-split">
           <motion.article
             className="home-hero-card"
             initial={{ opacity: 0, y: 12 }}
@@ -130,11 +142,28 @@ export function SecondaryView({
             </div>
           </motion.article>
 
-          <div className="home-stat-grid">
+          <motion.article
+            className="home-care-card"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="home-care-ring">
+              <strong>{dailyPercent}%</strong>
+              <span>Heute</span>
+            </div>
+
+            <div>
+              <span className="home-kicker">Tagespflege</span>
+              <h3>
+                {completedCount} von {totalTasks} Aufgaben erledigt
+              </h3>
+              <p>{homeStatusText}</p>
+            </div>
+          </motion.article>
+
+          <div className="home-stat-grid home-wide">
             <div className="info-tile">
-              <strong>
-                {completedCount} / {totalTasks}
-              </strong>
+              <strong>{completedCount}</strong>
               <br />
               Heute erledigt
             </div>
@@ -152,7 +181,7 @@ export function SecondaryView({
             </div>
 
             <div className="info-tile">
-              <strong>{Math.round((completedCount / Math.max(1, totalTasks)) * 100)} %</strong>
+              <strong>{dailyPercent} %</strong>
               <br />
               Tagesfortschritt
             </div>
@@ -179,6 +208,30 @@ export function SecondaryView({
                 <div>
                   <strong>Alle Erfolge freigeschaltet</strong>
                   <small>Großartige Pflegearbeit.</small>
+                </div>
+              </article>
+            )}
+          </section>
+
+          <section className="home-badges-card">
+            <div className="section-label">Letzte Erfolge</div>
+
+            {latestAchievements.length > 0 ? (
+              <div className="home-badge-row">
+                {latestAchievements.map((achievement) => (
+                  <div className="home-badge" key={achievement.id} title={achievement.title}>
+                    <span>{achievement.icon}</span>
+                    <small>{achievement.title}</small>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <article className="achievement-mini-card">
+                <span>🌱</span>
+
+                <div>
+                  <strong>Noch keine Erfolge</strong>
+                  <small>Der erste Erfolg wartet schon auf dich.</small>
                 </div>
               </article>
             )}

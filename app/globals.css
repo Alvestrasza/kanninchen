@@ -1353,3 +1353,151 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+.home-welcome {
+  margin-bottom: 1.2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0, 191, 255, 0.28);
+  border-radius: 0.45rem;
+  background:
+    radial-gradient(circle at 8% 20%, rgba(0, 191, 255, 0.16), transparent 10rem),
+    rgba(3, 26, 42, 0.62);
+  box-shadow: inset 0 0 1.2rem rgba(0, 143, 255, 0.1);
+}
+
+.home-welcome h2 {
+  margin: 0.18rem 0 0.45rem;
+}
+
+.home-welcome p {
+  margin: 0;
+  color: #b9eaff;
+  line-height: 1.45;
+}
+
+.home-dashboard-split {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.home-dashboard-split > .home-wide {
+  grid-column: 1 / -1;
+}
+
+.home-care-card {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid rgba(0, 191, 255, 0.35);
+  border-radius: 0.45rem;
+  background:
+    radial-gradient(circle at 14% 20%, rgba(0, 191, 255, 0.14), transparent 9rem),
+    rgba(3, 26, 42, 0.82);
+  box-shadow: inset 0 0 1.2rem rgba(0, 143, 255, 0.12);
+}
+
+.home-care-card h3 {
+  margin: 0.2rem 0 0.35rem;
+  color: #d6f4ff;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+}
+
+.home-care-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.home-care-ring {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(8, 191, 255, 0.2), rgba(3, 26, 42, 0.86));
+  box-shadow: 0 0 0.9rem rgba(0, 191, 255, 0.35);
+}
+
+.home-care-ring strong {
+  color: var(--gold);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.home-care-ring span {
+  margin-top: 0.16rem;
+  color: var(--cyan-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.home-badges-card {
+  padding: 0.2rem 0 0;
+}
+
+.home-badge-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.home-badge {
+  min-height: 6.2rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 0.45rem;
+  border: 1px solid rgba(255, 211, 93, 0.36);
+  border-radius: 0.4rem;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 211, 93, 0.18), transparent 4rem),
+    rgba(4, 28, 44, 0.72);
+  box-shadow: inset 0 0 1rem rgba(0, 143, 255, 0.1);
+  text-align: center;
+}
+
+.home-badge span {
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 2px solid #e9b343;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #335063, #1c2a34);
+  box-shadow: 0 0 0.7rem rgba(255, 211, 93, 0.34);
+  font-size: 1.45rem;
+}
+
+.home-badge small {
+  color: #d6f4ff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+@media (max-width: 1000px) {
+  .home-dashboard-split {
+    grid-template-columns: 1fr;
+  }
+
+  .home-dashboard-split > .home-wide {
+    grid-column: auto;
+  }
+
+  .home-badge-row {
+    grid-template-columns: repeat(auto-fit, minmax(5.8rem, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .home-care-card {
+    grid-template-columns: 1fr;
+  }
+}

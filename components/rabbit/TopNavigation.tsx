@@ -18,9 +18,7 @@ export function TopNavigation({ view, onChangeView }: TopNavigationProps) {
         {topTabs.map((tab) => (
           <button
             key={tab.view}
-            className={`tab ${
-              view === tab.view || (view === "home" && tab.view === "quests") ? "active" : ""
-            }`}
+            className={`tab ${view === tab.view ? "active" : ""}`}
             type="button"
             onClick={() => onChangeView(tab.view)}
           >
